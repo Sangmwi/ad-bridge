@@ -78,24 +78,34 @@ export default function SelectRolePage() {
 
       if (profileError) throw profileError;
 
-      // 2. Insert Details based on Role
+      // 2. Upsert Details based on Role
       if (role === "creator") {
         const { error: detailsError } = await supabase
           .from("creator_details")
-          .insert({
-            id: user.id,
-            handle: formData.handle,
-          });
+          .upsert(
+            {
+              id: user.id,
+              handle: formData.handle,
+            },
+            {
+              onConflict: "id",
+            }
+          );
         if (detailsError) throw detailsError;
         router.push("/creator/dashboard");
       } else if (role === "advertiser") {
         const { error: detailsError } = await supabase
           .from("advertiser_details")
-          .insert({
-            id: user.id,
-            brand_name: formData.brandName,
-            description: formData.description,
-          });
+          .upsert(
+            {
+              id: user.id,
+              brand_name: formData.brandName,
+              description: formData.description,
+            },
+            {
+              onConflict: "id",
+            }
+          );
         if (detailsError) throw detailsError;
         router.push("/advertiser/dashboard");
       }

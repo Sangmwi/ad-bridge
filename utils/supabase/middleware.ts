@@ -49,20 +49,21 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 2. 로그인한 사용자의 프로필 완료 여부 확인
+  // (단, /auth/select-role은 제외 - 무한 리다이렉트 방지)
   if (
     user &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     request.nextUrl.pathname !== "/"
   ) {
     // 프로필 확인
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    // 역할이 없으면 select-role로 리다이렉트
-    if (!profile || !profile.role) {
+    // 프로필 조회 실패 또는 역할이 없으면 select-role로 리다이렉트
+    if (profileError || !profile || !profile.role) {
       const url = request.nextUrl.clone();
       url.pathname = "/auth/select-role";
       return NextResponse.redirect(url);
@@ -70,25 +71,27 @@ export async function updateSession(request: NextRequest) {
 
     // 역할은 있지만 상세 정보가 없는지 확인
     if (profile.role === "creator") {
-      const { data: creator } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from("creator_details")
         .select("id")
         .eq("id", user.id)
         .single();
 
-      if (!creator) {
+      // 크리에이터 상세정보 조회 실패 또는 없으면 select-role로
+      if (creatorError || !creator) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/select-role";
         return NextResponse.redirect(url);
       }
     } else if (profile.role === "advertiser") {
-      const { data: advertiser } = await supabase
+      const { data: advertiser, error: advertiserError } = await supabase
         .from("advertiser_details")
         .select("id")
         .eq("id", user.id)
         .single();
 
-      if (!advertiser) {
+      // 광고주 상세정보 조회 실패 또는 없으면 select-role로
+      if (advertiserError || !advertiser) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/select-role";
         return NextResponse.redirect(url);
