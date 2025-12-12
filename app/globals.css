@@ -5,10 +5,23 @@
   --background: #ffffff;
   --foreground: #0f172a;
 
-  /* Brand - Single Primary Color */
-  --primary: #0d9488;
-  --primary-light: #5eead4;
-  --primary-dark: #0f766e;
+  /* Brand Palette */
+  --brand-50: #f0fdfa;
+  --brand-100: #ccfbf1;
+  --brand-200: #99f6e4;
+  --brand-300: #5eead4;
+  --brand-400: #2dd4bf;
+  --brand-500: #14b8a6;
+  --brand-600: #0d9488;
+  --brand-700: #0f766e;
+  --brand-800: #115e59;
+  --brand-900: #134e4a;
+  --brand-950: #042f2e;
+
+  /* Legacy & Semantic Mapping */
+  --primary: var(--brand-600);
+  --primary-light: var(--brand-300);
+  --primary-dark: var(--brand-700);
 
   /* Neutral Palette */
   --neutral-50: #f8fafc;
@@ -46,6 +59,19 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  
+  /* Brand Colors */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
 }
 
 body {

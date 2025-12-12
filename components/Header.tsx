@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import LogoRow from "@/assets/logos/Ad-Bridge-logo-row.svg";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,10 +89,7 @@ export function Header() {
             href="/"
             className="flex items-center gap-2 font-bold text-xl text-[var(--foreground)]"
           >
-            <div className="w-8 h-8 rounded-lg bg-[var(--primary)] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
-            </div>
-            <span>Ad-Bridge</span>
+            <LogoRow width={160} height={40} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -132,12 +130,7 @@ export function Header() {
             ) : (
               <>
                 <Link href="/auth/login">
-                  <Button variant="ghost" size="sm">
-                    로그인
-                  </Button>
-                </Link>
-                <Link href="/auth/login">
-                  <Button size="sm">시작하기</Button>
+                  <Button size="sm">로그인/가입</Button>
                 </Link>
               </>
             )}
