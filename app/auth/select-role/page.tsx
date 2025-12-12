@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 export default function SelectRolePage() {
   const [role, setRole] = useState<"creator" | "advertiser" | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [hasExistingRole, setHasExistingRole] = useState(false); // 이미 역할이 있는지 여부
   const [formData, setFormData] = useState({
     handle: "",
     brandName: "",
@@ -15,6 +17,40 @@ export default function SelectRolePage() {
   });
   const router = useRouter();
   const supabase = createClient();
+
+  // 페이지 로드시 기존 프로필 확인
+  useEffect(() => {
+    const checkExistingProfile = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) {
+          router.push("/auth/login");
+          return;
+        }
+
+        // 프로필에서 기존 역할 확인
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.role) {
+          // 역할이 이미 있으면 자동으로 설정
+          setRole(profile.role as "creator" | "advertiser");
+          setHasExistingRole(true);
+        }
+      } catch (error) {
+        console.error("Error checking profile:", error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    checkExistingProfile();
+  }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,11 +62,19 @@ export default function SelectRolePage() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      // 1. Update Profile Role
+      // 1. Upsert Profile (insert or update)
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ role: role })
-        .eq("id", user.id);
+        .upsert(
+          {
+            id: user.id,
+            email: user.email,
+            role: role,
+          },
+          {
+            onConflict: "id",
+          }
+        );
 
       if (profileError) throw profileError;
 
@@ -62,6 +106,15 @@ export default function SelectRolePage() {
       setLoading(false);
     }
   };
+
+  // 초기 로딩 중
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!role) {
     return (
@@ -109,12 +162,15 @@ export default function SelectRolePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 w-full max-w-md">
-        <button
-          onClick={() => setRole(null)}
-          className="text-sm text-gray-500 hover:text-gray-900 mb-6 flex items-center gap-1"
-        >
-          ← 다시 선택하기
-        </button>
+        {/* 역할이 이미 설정되어 있지 않은 경우만 "다시 선택하기" 버튼 표시 */}
+        {!hasExistingRole && (
+          <button
+            onClick={() => setRole(null)}
+            className="text-sm text-gray-500 hover:text-gray-900 mb-6 flex items-center gap-1"
+          >
+            ← 다시 선택하기
+          </button>
+        )}
 
         <h2 className="text-2xl font-bold mb-6">
           {role === "creator" ? "크리에이터 프로필 설정" : "브랜드 정보 설정"}

@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import LogoRow from "@/assets/logos/Ad-Bridge-logo-row.svg";
@@ -61,13 +59,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 text-center text-sm text-neutral-500">
-            계정이 없으신가요?{" "}
-            <Link
-              href="/auth/signup"
-              className="text-brand-500 font-semibold hover:underline"
-            >
-              <span className="">회원가입</span>
-            </Link>
+            구글 계정으로 간편하게 시작하세요
           </div>
         </div>
       </div>
