@@ -11,7 +11,14 @@ export default function SelectRolePage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasExistingRole, setHasExistingRole] = useState(false); // 이미 역할이 있는지 여부
   const [formData, setFormData] = useState({
+    // Creator fields
     handle: "",
+    bio: "",
+    instagramUrl: "",
+    youtubeUrl: "",
+    tiktokUrl: "",
+    followersCount: "",
+    // Advertiser fields
     brandName: "",
     description: "",
   });
@@ -86,6 +93,11 @@ export default function SelectRolePage() {
             {
               id: user.id,
               handle: formData.handle,
+              bio: formData.bio,
+              instagram_url: formData.instagramUrl,
+              youtube_url: formData.youtubeUrl,
+              tiktok_url: formData.tiktokUrl,
+              followers_count: parseInt(formData.followersCount) || 0,
             },
             {
               onConflict: "id",
@@ -188,26 +200,90 @@ export default function SelectRolePage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {role === "creator" ? (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                핸들 (ID)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-3.5 text-gray-500">@</span>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  핸들 (ID) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-gray-500">@</span>
+                  <input
+                    type="text"
+                    required
+                    value={formData.handle}
+                    onChange={(e) =>
+                      setFormData({ ...formData, handle: e.target.value })
+                    }
+                    className="w-full pl-8 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
+                    placeholder="username"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  한 줄 소개
+                </label>
                 <input
                   type="text"
-                  required
-                  value={formData.handle}
+                  value={formData.bio}
                   onChange={(e) =>
-                    setFormData({ ...formData, handle: e.target.value })
+                    setFormData({ ...formData, bio: e.target.value })
                   }
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
-                  placeholder="username"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
+                  placeholder="예: 패션과 뷰티를 사랑하는 크리에이터입니다."
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                마이샵 주소로 사용됩니다.
-              </p>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  SNS 채널 링크 (최소 1개)
+                </label>
+                <div className="space-y-2">
+                  <input
+                    type="url"
+                    value={formData.instagramUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagramUrl: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none text-sm"
+                    placeholder="인스타그램 주소 (https://instagram.com/...)"
+                  />
+                  <input
+                    type="url"
+                    value={formData.youtubeUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, youtubeUrl: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none text-sm"
+                    placeholder="유튜브 채널 주소"
+                  />
+                  <input
+                    type="url"
+                    value={formData.tiktokUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tiktokUrl: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none text-sm"
+                    placeholder="틱톡 프로필 주소"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  총 팔로워 수 (합계)
+                </label>
+                <input
+                  type="number"
+                  value={formData.followersCount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, followersCount: e.target.value })
+                  }
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
+                  placeholder="0"
+                />
+              </div>
             </div>
           ) : (
             <>

@@ -1,0 +1,326 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/button"; // Table components are likely not in button, using standard HTML for now or assuming shadcn setup.
+// Since I cannot see all UI components, I will use standard Tailwind + HTML for table structure to be safe.
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"; // Assuming standard shadcn paths, if not available I'll implement custom modal
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  MoreHorizontal,
+  Instagram,
+  Youtube,
+  Search,
+  ExternalLink,
+  ShieldCheck,
+  TrendingUp,
+} from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+
+// Types
+type Creator = {
+  applicationId: string;
+  creatorId: string;
+  status: string;
+  joinedAt: string;
+  email: string;
+  handle: string;
+  bio: string | null;
+  profileImage: string | null;
+  channels: {
+    instagram?: string;
+    youtube?: string;
+    tiktok?: string;
+  };
+  followers: number;
+  clicks: number;
+};
+
+// Icon mapping
+const ChannelIcon = ({ type, url }: { type: string; url?: string }) => {
+  if (!url) return null;
+  
+  let icon = <ExternalLink className="w-4 h-4" />;
+  if (type === "instagram") icon = <Instagram className="w-4 h-4" />;
+  if (type === "youtube") icon = <Youtube className="w-4 h-4" />;
+  
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gray-400 hover:text-[var(--primary)] transition-colors"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {icon}
+    </a>
+  );
+};
+
+export function CreatorManagementTable({
+  data,
+  campaignId,
+}: {
+  data: Creator[];
+  campaignId: string;
+}) {
+  const [creators, setCreators] = useState(data);
+  const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: "clicks" | "joinedAt";
+    direction: "asc" | "desc";
+  }>({ key: "clicks", direction: "desc" });
+  
+  const supabase = createClient();
+  const router = useRouter();
+
+  // Sorting logic
+  const sortedCreators = [...creators].sort((a, b) => {
+    if (sortConfig.key === "clicks") {
+      return sortConfig.direction === "desc"
+        ? b.clicks - a.clicks
+        : a.clicks - b.clicks;
+    } else {
+      return sortConfig.direction === "desc"
+        ? new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime()
+        : new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime();
+    }
+  });
+
+  const handleStatusUpdate = async (applicationId: string, newStatus: string) => {
+    if (!confirm("정말 상태를 변경하시겠습니까?")) return;
+
+    try {
+      const { error } = await supabase
+        .from("campaign_applications")
+        .update({ status: newStatus })
+        .eq("id", applicationId);
+
+      if (error) throw error;
+
+      setCreators((prev) =>
+        prev.map((c) =>
+          c.applicationId === applicationId ? { ...c, status: newStatus } : c
+        )
+      );
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("오류가 발생했습니다.");
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-[var(--border)] overflow-hidden">
+      {/* Header & Filter */}
+      <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-gray-50">
+        <h3 className="font-bold">참여 크리에이터 ({creators.length})</h3>
+        <div className="flex gap-2">
+          <select
+            className="text-sm border rounded-lg px-3 py-2 bg-white"
+            onChange={(e) =>
+              setSortConfig({
+                key: e.target.value as "clicks" | "joinedAt",
+                direction: "desc",
+              })
+            }
+          >
+            <option value="clicks">기여도(클릭) 높은 순</option>
+            <option value="joinedAt">최신 승인 순</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-50 text-gray-500 font-medium border-b">
+            <tr>
+              <th className="px-6 py-3">크리에이터</th>
+              <th className="px-6 py-3">채널</th>
+              <th className="px-6 py-3 text-right">팔로워</th>
+              <th className="px-6 py-3 text-right">기여도 (클릭)</th>
+              <th className="px-6 py-3 text-center">상태</th>
+              <th className="px-6 py-3 text-right">관리</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {sortedCreators.map((creator) => (
+              <tr
+                key={creator.creatorId}
+                className="hover:bg-gray-50 transition-colors cursor-pointer"
+                onClick={() => setSelectedCreator(creator)}
+              >
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                      {creator.profileImage ? (
+                        <img
+                          src={creator.profileImage}
+                          alt={creator.handle}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-500 font-bold">
+                          {creator.handle.substring(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-semibold flex items-center gap-1">
+                        {creator.handle}
+                        {creator.followers > 1000 && (
+                          <ShieldCheck className="w-3 h-3 text-[var(--primary)]" />
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500">{creator.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex gap-2">
+                    <ChannelIcon
+                      type="instagram"
+                      url={creator.channels.instagram}
+                    />
+                    <ChannelIcon type="youtube" url={creator.channels.youtube} />
+                    <ChannelIcon type="tiktok" url={creator.channels.tiktok} />
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  {creator.followers.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 text-right font-mono">
+                  <div className="flex items-center justify-end gap-1 font-bold text-[var(--primary)]">
+                    {creator.clicks.toLocaleString()}
+                    <span className="text-xs font-normal text-gray-400">
+                      clicks
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      creator.status === "approved"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {creator.status === "approved" ? "활동중" : "중단됨"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <button
+                    className="p-2 hover:bg-gray-100 rounded-full text-gray-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusUpdate(
+                        creator.applicationId,
+                        creator.status === "approved" ? "rejected" : "approved"
+                      );
+                    }}
+                  >
+                    {creator.status === "approved" ? "중단" : "복구"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Detail Modal */}
+      {selectedCreator && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fadeIn"
+          onClick={() => setSelectedCreator(null)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b text-center bg-gray-50">
+              <div className="w-20 h-20 rounded-full bg-white mx-auto mb-4 flex items-center justify-center shadow-sm overflow-hidden border-2 border-white">
+                {selectedCreator.profileImage ? (
+                  <img
+                    src={selectedCreator.profileImage}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl font-bold text-gray-400">
+                    {selectedCreator.handle.substring(0, 1)}
+                  </span>
+                )}
+              </div>
+              <h2 className="text-2xl font-bold">{selectedCreator.handle}</h2>
+              <p className="text-gray-500 text-sm">{selectedCreator.email}</p>
+              
+              <div className="flex justify-center gap-4 mt-4">
+                <ChannelIcon type="instagram" url={selectedCreator.channels.instagram} />
+                <ChannelIcon type="youtube" url={selectedCreator.channels.youtube} />
+                <ChannelIcon type="tiktok" url={selectedCreator.channels.tiktok} />
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+               <div>
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  소개
+                </label>
+                <p className="mt-1 text-gray-700">
+                  {selectedCreator.bio || "소개가 없습니다."}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-blue-50 rounded-xl text-center">
+                  <p className="text-xs text-blue-600 font-bold uppercase">
+                    총 팔로워
+                  </p>
+                  <p className="text-2xl font-bold text-blue-900 mt-1">
+                    {selectedCreator.followers.toLocaleString()}
+                  </p>
+                </div>
+                <div className="p-4 bg-green-50 rounded-xl text-center">
+                  <p className="text-xs text-green-600 font-bold uppercase">
+                    기여한 클릭
+                  </p>
+                  <p className="text-2xl font-bold text-green-900 mt-1">
+                    {selectedCreator.clicks.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => setSelectedCreator(null)}
+              >
+                닫기
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

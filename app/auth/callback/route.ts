@@ -15,29 +15,25 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // 1. 프로필 확인 및 생성 (upsert 사용)
+        // 1. 프로필 조회
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
-          .upsert(
-            {
-              id: user.id,
-              email: user.email,
-              role: null,
-            },
-            {
-              onConflict: "id",
-              ignoreDuplicates: false,
-            }
-          )
           .select("id, role")
+          .eq("id", user.id)
           .single();
 
+        // 프로필이 없으면 (PGRST116) 역할 선택 페이지로
+        if (profileError?.code === "PGRST116") {
+          return NextResponse.redirect(`${origin}/auth/select-role`);
+        }
+
+        // 프로필 조회 실패 (다른 에러)
         if (profileError) {
-          console.error("Profile upsert error:", profileError);
+          console.error("Profile select error:", profileError);
           return NextResponse.redirect(`${origin}/auth/auth-code-error`);
         }
 
-        // 프로필이 없거나 역할이 없으면 역할 선택 페이지로
+        // 역할이 없으면 역할 선택 페이지로
         if (!profile || !profile.role) {
           return NextResponse.redirect(`${origin}/auth/select-role`);
         }

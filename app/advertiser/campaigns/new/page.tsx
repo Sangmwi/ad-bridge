@@ -15,6 +15,7 @@ export default function NewCampaignPage() {
     price: "",
     description: "",
     imageUrl: "",
+    targetUrl: "", // 판매 페이지 URL
     rewardType: "cps",
     rewardAmount: "",
     minFollowers: "0",
@@ -40,6 +41,7 @@ export default function NewCampaignPage() {
           price: parseFloat(formData.price),
           description: formData.description,
           image_url: formData.imageUrl,
+          target_url: formData.targetUrl, // DB 저장
         })
         .select()
         .single();
@@ -125,6 +127,22 @@ export default function NewCampaignPage() {
                   value={formData.imageUrl}
                   onChange={(e) =>
                     setFormData({ ...formData, imageUrl: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  판매 페이지 URL (소비자가 구매할 곳)
+                </label>
+                <input
+                  type="url"
+                  required
+                  placeholder="https://myshop.com/products/123"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-[var(--primary)]"
+                  value={formData.targetUrl}
+                  onChange={(e) =>
+                    setFormData({ ...formData, targetUrl: e.target.value })
                   }
                 />
               </div>

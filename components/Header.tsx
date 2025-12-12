@@ -59,12 +59,18 @@ export function Header() {
     };
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
-    setUser(null);
-    setRole(null);
-    router.push("/");
+  const handleSignOut = async (e?: React.MouseEvent) => {
+    e?.preventDefault(); // 기본 동작 방지
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setRole(null);
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+      // 에러 발생 시에도 강제 이동
+      window.location.href = "/";
+    }
   };
 
   const getDashboardLink = () => {
@@ -118,14 +124,15 @@ export function Header() {
                     대시보드
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSignOut}
-                  title="로그아웃"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
+                <Link href="/auth/logout">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    title="로그아웃"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
+                </Link>
               </>
             ) : (
               <>
@@ -178,14 +185,18 @@ export function Header() {
                       대시보드
                     </Button>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    className="w-full gap-2 justify-start"
-                    onClick={handleSignOut}
+                  <Link
+                    href="/auth/logout"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
-                    <LogOut className="w-4 h-4" />
-                    로그아웃
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full gap-2 justify-start"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      로그아웃
+                    </Button>
+                  </Link>
                 </>
               ) : (
                 <>
