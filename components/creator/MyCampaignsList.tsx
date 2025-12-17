@@ -2,18 +2,18 @@
 
 import { useMyCampaigns, useCreatorClickCounts } from "@/lib/queries/creator";
 import { useUser } from "@/lib/queries/auth";
-import { MyCampaignCard } from "@/components/MyCampaignCard";
+import { MyCampaignListItem } from "@/components/creator/MyCampaignListItem";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import Link from "next/link";
 
 export function MyCampaignsList() {
-  const { data: user } = useUser();
+  const { data: user, isLoading: userLoading } = useUser();
   const { data: applications, isLoading } = useMyCampaigns(user?.id || "");
   const { data: clickCounts, isLoading: clicksLoading } = useCreatorClickCounts(
     user?.id || ""
   );
 
-  if (isLoading || clicksLoading) {
+  if (userLoading || isLoading || clicksLoading) {
     return (
       <div className="text-center py-20">
         <div className="inline-block w-8 h-8 border-4 border-neutral-200 border-t-primary rounded-full animate-spin"></div>
@@ -22,7 +22,18 @@ export function MyCampaignsList() {
   }
 
   if (!user) {
-    return <div>로그인이 필요합니다.</div>;
+    return <EmptyState
+      size="lg"
+      title="로그인이 필요합니다"
+      description="로그인 후 이용해주세요."
+      action={
+        <Link href="/auth/login">
+          <button className="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors">
+            로그인하러 가기
+          </button>
+        </Link>
+      }
+    />;
   }
 
   const myCampaigns = applications || [];
@@ -45,11 +56,10 @@ export function MyCampaignsList() {
   }
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="space-y-4">
       {myCampaigns.map((app: any) => (
-        <MyCampaignCard
+        <MyCampaignListItem
           key={app.id}
-          applicationId={app.id}
           campaign={app.campaigns}
           creatorId={user.id}
           clicks={clickCounts?.[app.campaigns.id] || 0}
