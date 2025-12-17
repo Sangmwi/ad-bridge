@@ -3,8 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { MyCampaignCard } from "@/components/MyCampaignCard";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { PageHeader } from "@/components/common/PageHeader";
-import { EmptyState } from "@/components/common/EmptyState";
+import { PageHeader } from "@/components/patterns/PageHeader";
+import { EmptyState } from "@/components/patterns/EmptyState";
 
 export default async function MyCampaignsPage() {
   const supabase = await createClient();

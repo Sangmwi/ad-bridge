@@ -32,10 +32,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 py-20 border border-(--border)">
+        <div className="bg-card rounded-2xl p-8 py-20">
           <div className="mb-16 space-y-2">
             <LogoRow width={220} height={55} />
             <p className="text-slate-600 font-medium pl-2.5">

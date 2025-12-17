@@ -21,7 +21,7 @@ export default function Home() {
       
       {/* Hero Section */}
       <section>
-        <div className="mx-auto max-w-7xl px-4 py-24 md:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-24 md:px-12">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left: Content */}
             <div className="space-y-8">
@@ -59,7 +59,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              <div className="flex items-center gap-6 pt-4">
+              <div className="flex flex-col md:flex-row items-center gap-6 pt-4">
                 {["숨겨진 수수료 없음", "100% 정확한 귀속", "글로벌 진출"].map(
                   (item) => (
                     <div

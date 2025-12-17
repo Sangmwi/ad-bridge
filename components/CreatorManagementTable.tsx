@@ -1,28 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/button"; // Table components are likely not in button, using standard HTML for now or assuming shadcn setup.
-// Since I cannot see all UI components, I will use standard Tailwind + HTML for table structure to be safe.
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"; // Assuming standard shadcn paths, if not available I'll implement custom modal
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusBadge } from "@/components/primitives/StatusBadge";
 import {
   MoreHorizontal,
   Instagram,
@@ -218,15 +204,12 @@ export function CreatorManagementTable({
                   </div>
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-                      creator.status === "approved"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-red-50 text-red-700 border-red-200"
-                    }`}
+                  <StatusBadge
+                    size="md"
+                    tone={creator.status === "approved" ? "success" : "danger"}
                   >
                     {creator.status === "approved" ? "활동중" : "중단됨"}
-                  </span>
+                  </StatusBadge>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <Button

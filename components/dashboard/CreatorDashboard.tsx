@@ -2,9 +2,9 @@ import { createClient } from "@/utils/supabase/server";
 import { CampaignCard } from "@/components/CampaignCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/common/PageHeader";
-import { EmptyState } from "@/components/common/EmptyState";
-import { CardGrid } from "@/components/common/CardGrid";
+import { PageHeader } from "@/components/patterns/PageHeader";
+import { EmptyState } from "@/components/patterns/EmptyState";
+import { CardGrid } from "@/components/patterns/CardGrid";
 
 export default async function CreatorDashboard() {
   const supabase = await createClient();

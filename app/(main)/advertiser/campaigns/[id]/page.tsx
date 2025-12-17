@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Clock, MousePointer2, Users, DollarSign } from "lucide-react";
 import { formatWon } from "@/lib/format";
+import { StatCard } from "@/components/patterns/StatCard";
+import { Surface } from "@/components/primitives/Surface";
+import { StatusBadge } from "@/components/primitives/StatusBadge";
 
 export default async function CampaignDetailPage({
   params,
@@ -143,7 +146,7 @@ export default async function CampaignDetailPage({
 
         {/* Section A: Campaign Overview */}
         <div className="bg-white rounded-2xl border border-border p-8 mb-8 flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-64 h-48 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+          <div className="w-full md:w-64 h-48 bg-gray-100 rounded-lg overflow-hidden shrink-0">
             {product?.image_url ? (
               <img
                 src={product.image_url}
@@ -161,15 +164,12 @@ export default async function CampaignDetailPage({
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-3xl font-bold">{product?.name}</h1>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      campaign.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+                  <StatusBadge
+                    size="md"
+                    tone={campaign.status === "active" ? "success" : "neutral"}
                   >
                     {campaign.status === "active" ? "진행중" : "중지됨"}
-                  </span>
+                  </StatusBadge>
                 </div>
                 <p className="text-gray-600 mb-6">{product?.description}</p>
                 <div className="flex gap-6 text-sm">
@@ -204,47 +204,37 @@ export default async function CampaignDetailPage({
 
         {/* Section B: KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                <MousePointer2 className="w-5 h-5" />
-              </div>
-              <span className="text-gray-500 font-medium">총 유입 클릭</span>
-            </div>
-            <p className="text-3xl font-bold">{totalClicks.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-green-50 text-green-600 rounded-lg">
-                <Users className="w-5 h-5" />
-              </div>
-              <span className="text-gray-500 font-medium">참여 크리에이터</span>
-            </div>
-            <p className="text-3xl font-bold">
-              {activeCreatorsCount.toLocaleString()}
-              <span className="text-sm text-gray-400 ml-1 font-normal">
-                / {creatorsData.length}명
-              </span>
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
-                <DollarSign className="w-5 h-5" />
-              </div>
-              <span className="text-gray-500 font-medium">
-                {campaign.reward_type === "cpc" ? "총 지출 (예상)" : "총 지출"}
-              </span>
-            </div>
-            <p className="text-3xl font-bold">
-              {formatWon(estimatedSpend)}
-            </p>
-            {campaign.reward_type === "cps" && (
-              <p className="text-xs text-gray-400 mt-1">
-                * 판매 연동 전이므로 0원으로 표시됩니다.
-              </p>
-            )}
-          </div>
+          <StatCard
+            icon={<MousePointer2 className="w-6 h-6" />}
+            label="총 유입 클릭"
+            value={totalClicks.toLocaleString()}
+          />
+          <StatCard
+            icon={<Users className="w-6 h-6" />}
+            label="참여 크리에이터"
+            value={
+              <>
+                {activeCreatorsCount.toLocaleString()}
+                <span className="text-sm text-gray-400 ml-1 font-normal">
+                  / {creatorsData.length}명
+                </span>
+              </>
+            }
+          />
+          <StatCard
+            icon={<DollarSign className="w-6 h-6" />}
+            label={campaign.reward_type === "cpc" ? "총 지출 (예상)" : "총 지출"}
+            value={
+              <>
+                {formatWon(estimatedSpend)}
+                {campaign.reward_type === "cps" ? (
+                  <span className="block text-xs text-gray-400 mt-1 font-normal">
+                    * 판매 연동 전이므로 0원으로 표시됩니다.
+                  </span>
+                ) : null}
+              </>
+            }
+          />
         </div>
 
         {/* Section C: Creator Management Table */}

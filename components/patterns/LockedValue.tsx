@@ -25,7 +25,7 @@ export function LockedValue({
 
   return (
     <span className={cn("relative inline-block align-middle tabular-nums", className)}>
-      <span className="select-none blur-[8px] opacity-60 leading-none">{preview}</span>
+      <span className="select-none blur-sm opacity-60 leading-none">{preview}</span>
       {variant === "center-lock" ? (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <LockIcon

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { LockedValue } from "@/components/common/LockedValue";
+import { LockedValue } from "@/components/patterns/LockedValue";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
 

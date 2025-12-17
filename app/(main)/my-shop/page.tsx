@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { ExternalLink } from "lucide-react";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState } from "@/components/patterns/EmptyState";
 import { formatWon } from "@/lib/format";
 
 type ShopItem = {

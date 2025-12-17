@@ -1,10 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink, CheckCircle, MousePointer2, AlertCircle } from "lucide-react";
+import { ExternalLink, CheckCircle, MousePointer2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatWon } from "@/lib/format";
+import { CopyField } from "@/components/patterns/CopyField";
+import { StatusBadge } from "@/components/primitives/StatusBadge";
 
 type MyCampaignProps = {
   applicationId: string;
@@ -23,7 +25,6 @@ type MyCampaignProps = {
 };
 
 export function MyCampaignCard({ campaign, creatorId, clicks }: MyCampaignProps) {
-  const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
@@ -31,13 +32,6 @@ export function MyCampaignCard({ campaign, creatorId, clicks }: MyCampaignProps)
   }, []);
 
   const trackingLink = origin ? `${origin}/cl/${campaign.id}/${creatorId}` : "";
-
-  const handleCopyLink = () => {
-    if (!trackingLink) return;
-    navigator.clipboard.writeText(trackingLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const product = Array.isArray(campaign.products)
     ? campaign.products[0]
@@ -61,10 +55,14 @@ export function MyCampaignCard({ campaign, creatorId, clicks }: MyCampaignProps)
           </div>
         )}
         <div className="absolute top-3 left-3">
-          <span className="px-2.5 py-1 bg-green-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-sm">
+          <StatusBadge
+            tone="success"
+            size="md"
+            className="flex items-center gap-1.5 backdrop-blur-sm shadow-sm bg-green-500/90 text-white"
+          >
             <CheckCircle className="w-3.5 h-3.5" />
             승인됨
-          </span>
+          </StatusBadge>
         </div>
         <div className="absolute top-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg font-semibold backdrop-blur-sm shadow-sm">
           {campaign.reward_type === "cps" ? "판매당" : "클릭당"} {formatWon(campaign.reward_amount)}
@@ -88,34 +86,18 @@ export function MyCampaignCard({ campaign, creatorId, clicks }: MyCampaignProps)
         </div>
 
         <div className="mt-auto space-y-3">
-          {/* 링크 박스 */}
-          <div className="bg-neutral-50 p-2.5 rounded-lg border border-neutral-200 flex items-center justify-between gap-2">
-            <code className="text-xs text-neutral-500 truncate flex-1 font-mono bg-white px-2 py-1 rounded border border-neutral-100">
-              {trackingLink || "링크 생성 중..."}
-            </code>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-7 w-7 p-0 text-neutral-500 hover:text-primary"
-              onClick={handleCopyLink}
-              title="링크 복사"
-              disabled={!trackingLink}
-            >
-              {copied ? (
-                <CheckCircle className="w-4 h-4 text-green-500" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </Button>
-          </div>
+          <CopyField value={trackingLink} placeholder="링크 생성 중..." />
 
           <div className="grid grid-cols-2 gap-2">
             <Button
-              className={`w-full ${copied ? "bg-green-600 hover:bg-green-700" : "bg-primary hover:bg-primary-dark"}`}
-              onClick={handleCopyLink}
+              className="w-full bg-primary hover:bg-primary-dark"
+              onClick={async () => {
+                if (!trackingLink) return;
+                await navigator.clipboard.writeText(trackingLink);
+              }}
               disabled={!trackingLink}
             >
-              {copied ? "복사완료!" : "링크 복사"}
+              링크 복사
             </Button>
             {/* 실제 상품 페이지로 이동하는 버튼이 필요하다면 targetUrl이 필요하지만, 현재는 트래킹 링크 테스트용으로 대체 */}
             <Link href={trackingLink} target="_blank" className="w-full"> 

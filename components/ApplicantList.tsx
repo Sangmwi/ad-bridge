@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { Check, X } from "lucide-react";
+import { formatTimeAgo } from "@/lib/time";
+import { ConfirmAction } from "@/components/patterns/ConfirmAction";
 
 type Application = {
   id: string;
@@ -73,27 +75,44 @@ export function ApplicantList({
               캠페인에 지원했습니다.
             </p>
             <p className="text-xs text-neutral-400 mt-1">
-              {new Date(app.created_at).toLocaleDateString()}
+              {formatTimeAgo(app.created_at)}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
-              onClick={() => handleStatusUpdate(app.id, "rejected")}
+            <ConfirmAction
+              confirmText="이 지원을 거절할까요?"
+              onConfirm={() => handleStatusUpdate(app.id, "rejected")}
             >
-              <X className="w-4 h-4 mr-1" />
-              거절
-            </Button>
-            <Button
-              size="sm"
-              className="bg-primary hover:bg-primary-dark text-white"
-              onClick={() => handleStatusUpdate(app.id, "approved")}
+              {({ onClick, pending }) => (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                  onClick={onClick}
+                  disabled={pending}
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  거절
+                </Button>
+              )}
+            </ConfirmAction>
+
+            <ConfirmAction
+              confirmText="이 지원을 승인할까요?"
+              onConfirm={() => handleStatusUpdate(app.id, "approved")}
             >
-              <Check className="w-4 h-4 mr-1" />
-              승인
-            </Button>
+              {({ onClick, pending }) => (
+                <Button
+                  size="sm"
+                  className="bg-primary hover:bg-primary-dark text-white"
+                  onClick={onClick}
+                  disabled={pending}
+                >
+                  <Check className="w-4 h-4 mr-1" />
+                  승인
+                </Button>
+              )}
+            </ConfirmAction>
           </div>
         </div>
       ))}

@@ -125,7 +125,7 @@ export function Header({ user, role }: HeaderProps) {
 
                   <DropdownMenuItem
                     onClick={() => signOut()}
-                    className="focus:bg-red-50 focus:text-red-600 cursor-pointer w-full flex items-center px-2 py-1.5 text-xs text-neutral-500 transition-colors"
+                    className="focus:bg-neutral-50 focus:text-neutral-600 cursor-pointer w-full flex items-center px-2 py-1.5 text-xs text-neutral-500 transition-colors"
                 >
                     <LogOut className="mr-2 h-3.5 w-3.5" />
                     <span>로그아웃</span>
