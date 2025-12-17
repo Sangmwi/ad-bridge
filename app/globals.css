@@ -184,6 +184,15 @@ h6 {
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 /* Custom animations */

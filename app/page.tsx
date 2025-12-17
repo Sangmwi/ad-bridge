@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import LogoRow from "@/assets/logos/Ad-Bridge-logo-row.svg";
 import {
   ArrowRight,
   Shield,
@@ -127,7 +128,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              왜 Ad-Bridge인가요?
+              왜 Ad Bridge인가요?
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
               성과형 크리에이터 커머스를 위해 특별히 설계된 플랫폼
@@ -380,55 +381,96 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-neutral-900 text-white pt-20 pb-10 px-6 lg:px-8 border-t border-neutral-800">
+      <footer className="bg-white border-t border-neutral-200 pt-16 pb-8 px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div className="space-y-4">
-              <div className="flex items-center gap-2 font-bold text-xl text-white">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">A</span>
-                </div>
-                <span>Ad-Bridge</span>
-              </div>
-              <p className="text-neutral-400 text-sm leading-relaxed max-w-xs">
+              <Link href="/" className="inline-block">
+                <LogoRow width={140} height={32} className="text-foreground" />
+              </Link>
+              <p className="text-neutral-600 text-sm leading-relaxed max-w-xs">
                 크리에이터와 브랜드를 위한 투명하고 공정한<br/>성과형 커머스 플랫폼.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-white mb-4">서비스</h4>
-              <ul className="space-y-3 text-sm text-neutral-400">
-                <li><Link href="#" className="hover:text-primary transition-colors">캠페인 탐색</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">광고주 찾기</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">성공 사례</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">요금제</Link></li>
+              <h4 className="font-semibold text-neutral-900 mb-4 text-sm">서비스</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="/campaigns" className="text-neutral-600 hover:text-primary transition-colors">
+                    캠페인 탐색
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    광고주 찾기
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    성공 사례
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    요금제
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">회사</h4>
-              <ul className="space-y-3 text-sm text-neutral-400">
-                <li><Link href="#" className="hover:text-primary transition-colors">회사 소개</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">채용 정보</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">블로그</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">문의하기</Link></li>
+              <h4 className="font-semibold text-neutral-900 mb-4 text-sm">회사</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    회사 소개
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    채용 정보
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    블로그
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    문의하기
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">법적 고지</h4>
-              <ul className="space-y-3 text-sm text-neutral-400">
-                <li><Link href="#" className="hover:text-primary transition-colors">이용약관</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">개인정보처리방침</Link></li>
-                <li><Link href="#" className="hover:text-primary transition-colors">사업자 정보 확인</Link></li>
+              <h4 className="font-semibold text-neutral-900 mb-4 text-sm">법적 고지</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="/terms" className="text-neutral-600 hover:text-primary transition-colors">
+                    이용약관
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-neutral-600 hover:text-primary transition-colors">
+                    개인정보처리방침
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-neutral-600 hover:text-primary transition-colors">
+                    사업자 정보 확인
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
-            <p>© 2025 Ad-Bridge. All rights reserved.</p>
+          <div className="pt-8 border-t border-neutral-200 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-neutral-500">© 2025 Ad-Bridge. All rights reserved.</p>
             <div className="flex gap-4">
-               {/* SNS Icons placehoder if needed */}
+              {/* SNS Icons placeholder if needed */}
             </div>
           </div>
         </div>

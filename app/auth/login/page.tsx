@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
-import LogoRow from "@/assets/logos/Ad-Bridge-logo-row.svg";
+import Link from "next/link";
+import LogoCol from "@/assets/logos/Ad-Bridge-logo-col.svg";
 import GoogleIcon from "@/assets/icons/google-icon.svg";
 
 export default function LoginPage() {
@@ -32,14 +33,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-6 pt-16">
       <div className="w-full max-w-md">
         {/* Login Card */}
-        <div className="bg-card rounded-2xl p-8 py-20">
-          <div className="mb-16 space-y-2">
-            <LogoRow width={220} height={55} />
-            <p className="text-slate-600 font-medium pl-2.5">
-              당신의 영향력을 수익으로
+        <div className="bg-card rounded-2xl p-4 py-20">
+          <div className="mb-24">
+            <LogoCol width={220} height={220} className="mx-auto" />
+            <p className="text-slate-600 font-medium pl-2.5 text-center text-lg">
+              당신의 영향력을 수익으로.
+            </p>
+            <p className="text-slate-600 font-medium pl-2.5 text-center text-lg">
+              수익으로 당신의 영향력을.
             </p>
           </div>
 
@@ -47,7 +51,7 @@ export default function LoginPage() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full flex items-center gap-2 py-4 text-base"
+              className="w-full flex items-center gap-2 py-4 text-base border-neutral-300 rounded-lg"
               onClick={handleGoogleLogin}
               disabled={loading}
             >
@@ -60,8 +64,8 @@ export default function LoginPage() {
             </Button>
           </div>
 
-          <div className="mt-6 text-center text-sm text-neutral-500">
-            구글 계정으로 간편하게 시작하세요
+          <div className="mt-6 text-center text-xs text-neutral-500">
+            구글 계정으로 간편하게 로그인하세요.
           </div>
         </div>
       </div>

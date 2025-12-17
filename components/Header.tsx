@@ -42,7 +42,7 @@ export function Header({ user, role }: HeaderProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-border">
-      <nav className="mx-auto max-w-7xl px-6 lg:px-8">
+      <nav className="mx-auto max-w-7xl px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link
@@ -66,7 +66,7 @@ export function Header({ user, role }: HeaderProps) {
           </div>
 
           {/* Desktop CTA & Profile */}
-          <div className="hidden md:flex md:items-center md:gap-x-3">
+          <div className="min-w-35 hidden md:flex md:items-center md:gap-x-3 md:justify-end">
             {user ? (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
