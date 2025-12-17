@@ -91,7 +91,7 @@ export function CampaignExploreFilterBar({
           placeholder="제목으로 검색…"
         />
 
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2">
           <FilterSelect
             value={c1}
             onChange={(nextC1) => {
@@ -113,17 +113,13 @@ export function CampaignExploreFilterBar({
           />
         </div>
 
-        <SearchButton
-          type="submit"
-          isLoading={isSubmitting || isPending}
-        />
-
-        <ClearButton onClick={clearAll} />
+        <div className="grid grid-cols-1 gap-2 sm:flex sm:gap-2">
+          <SearchButton type="submit" isLoading={isSubmitting || isPending} />
+          <ClearButton onClick={clearAll} />
+        </div>
       </form>
 
       {/* no inline pending text; pending state is shown on the search button */}
     </div>
   );
 }
-
-

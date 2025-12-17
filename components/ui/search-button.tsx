@@ -14,8 +14,8 @@ export const SearchButton = React.forwardRef<HTMLButtonElement, SearchButtonProp
         ref={ref}
         disabled={isLoading || props.disabled}
         className={cn(
-          "relative inline-flex h-10 min-w-[96px] items-center justify-center rounded-xl px-4 text-sm font-semibold text-white disabled:opacity-70 disabled:backdrop-blur-sm",
-          isLoading ? "bg-black" : "bg-neutral-900 hover:bg-neutral-800",
+          "relative inline-flex h-10 min-w-[84px] items-center justify-center rounded-xl px-4 text-sm font-semibold text-white disabled:opacity-70 disabled:backdrop-blur-sm",
+          isLoading ? "bg-primary" : "bg-primary hover:bg-primary/90",
           className
         )}
         {...props}

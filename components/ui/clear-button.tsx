@@ -18,7 +18,6 @@ export const ClearButton = React.forwardRef<HTMLButtonElement, ClearButtonProps>
         )}
         {...props}
       >
-        <X className="h-4 w-4" />
         {children}
       </button>
     );
