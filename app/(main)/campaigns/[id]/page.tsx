@@ -1,66 +1,45 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { CampaignDetailForCreator } from "@/components/features/campaigns/CampaignDetailForCreator";
+import { useCampaignDetail } from "@/lib/queries/campaigns";
+import { useUserProfile } from "@/lib/queries/auth";
+import { Campaign } from "@/lib/types/campaign";
 
-export default async function CampaignDetailPageForCreator({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const supabase = await createClient();
+export default function CampaignDetailPageForCreator() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
 
-  // 사용자 확인
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: campaign, isLoading: campaignLoading, error } = useCampaignDetail(
+    id,
+    profile?.user
+  );
 
-  if (!user) {
-    redirect("/auth/login");
+  // 크리에이터 역할 체크
+  useEffect(() => {
+    if (!profileLoading && profile) {
+      if (!profile.user) {
+        router.push("/auth/login");
+        return;
+      }
+      if (profile.role !== "creator") {
+        router.push("/campaigns");
+      }
+    }
+  }, [profile, profileLoading, router]);
+
+  if (profileLoading || campaignLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="inline-block w-8 h-8 border-4 border-neutral-200 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
-  // 프로필 확인
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  // 크리에이터가 아니면 리다이렉트
-  if (profile?.role !== "creator") {
-    redirect("/campaigns");
-  }
-
-  // 캠페인 정보 조회
-  const { data: campaign, error: campaignError } = await supabase
-    .from("campaigns")
-    .select(
-      `
-      id,
-      status,
-      reward_type,
-      reward_amount,
-      created_at,
-      conditions,
-      products (
-        name,
-        price,
-        image_url,
-        description,
-        category_id,
-        product_categories (
-          id,
-          name,
-          parent_id
-        )
-      )
-    `
-    )
-    .eq("id", id)
-    .eq("status", "active")
-    .single();
-
-  if (campaignError || !campaign) {
+  if (error || !campaign) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -74,6 +53,5 @@ export default async function CampaignDetailPageForCreator({
     );
   }
 
-  return <CampaignDetailForCreator campaign={campaign} />;
+  return <CampaignDetailForCreator campaign={campaign as Campaign} />;
 }
-

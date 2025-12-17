@@ -48,7 +48,7 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
       <div className="p-6">
         <CategoryText category={category} className="mb-1.5" />
         <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-        <p className="text-xs text-neutral-600 mb-3 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-neutral-600 mb-3 line-clamp-1 leading-relaxed">
           {product.description}
         </p>
         {campaign.created_at && (

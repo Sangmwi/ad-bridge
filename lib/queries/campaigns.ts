@@ -124,6 +124,75 @@ export function useCampaigns(
   });
 }
 
+/**
+ * 단일 캠페인 상세 정보를 가져오는 훅
+ */
+export function useCampaignDetail(
+  id: string,
+  user: { id: string } | null | undefined = undefined
+) {
+  return useQuery({
+    queryKey: queryKeys.campaigns.detail(id),
+    queryFn: async () => {
+      const supabase = createClient();
+
+      // user가 전달되지 않았을 때만 내부에서 확인 (중복 호출 방지)
+      let effectiveUser = user;
+      if (effectiveUser === undefined) {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        effectiveUser = currentUser || null;
+      }
+
+      const { data: campaign, error } = await supabase
+        .from("campaigns")
+        .select(`
+          id,
+          status,
+          reward_type,
+          reward_amount,
+          created_at,
+          conditions,
+          products (
+            name,
+            price,
+            image_url,
+            description,
+            category_id,
+            product_categories (
+              id,
+              name,
+              parent_id
+            )
+          )
+        `)
+        .eq("id", id)
+        .eq("status", "active")
+        .single();
+
+      if (error) throw error;
+      if (!campaign) return null;
+
+      // 비로그인 사용자를 위한 데이터 마스킹
+      if (!effectiveUser) {
+        const { products } = campaign;
+        return {
+          ...campaign,
+          reward_amount: null,
+          products: Array.isArray(products)
+            ? products.map((p: any) => ({ ...p, price: null }))
+            : products && typeof products === "object"
+              ? { ...(products as Record<string, unknown>), price: null }
+              : null,
+        };
+      }
+
+      return campaign;
+    },
+    enabled: !!id,
+    staleTime: 30_000, // 30초
+  });
+}
+
 export function useCategories() {
   return useQuery({
     queryKey: queryKeys.categories.list(),

@@ -24,7 +24,6 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
   if (!product) return null;
 
   const category = product.product_categories ?? null;
-  const categoryName = category?.name || null;
 
   const handleApply = async () => {
     setLoading(true);
@@ -133,14 +132,14 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
               )}
 
               {/* Conditions */}
-              {campaign.conditions?.min_followers != null && campaign.conditions.min_followers > 0 && (
-                <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-border">
-                  <p className="text-sm text-neutral-600">
-                    <span className="font-semibold">최소 팔로워 수:</span>{" "}
-                    {campaign.conditions.min_followers.toLocaleString()}명
-                  </p>
-                </div>
-              )}
+              <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-border">
+                <p className="text-sm text-neutral-600">
+                  <span className="font-semibold">최소 팔로워 수:</span>{" "}
+                  {campaign.conditions?.min_followers != null && campaign.conditions.min_followers > 0
+                    ? `${campaign.conditions.min_followers.toLocaleString()}명`
+                    : "제한없음"}
+                </p>
+              </div>
 
               {/* Apply Button */}
               <div className="flex justify-end mt-auto pt-6">
