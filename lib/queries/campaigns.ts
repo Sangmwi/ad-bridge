@@ -11,12 +11,19 @@ export interface CampaignFilters {
 
 export function useCampaigns(
   filters: CampaignFilters = {},
-  user: { id: string } | null = null
+  user: { id: string } | null | undefined = undefined
 ) {
   return useQuery({
-    queryKey: queryKeys.campaigns.list(filters),
+    queryKey: queryKeys.campaigns.list(filters, user?.id),
     queryFn: async () => {
       const supabase = createClient();
+      
+      // user가 전달되지 않았을 때만 내부에서 확인 (중복 호출 방지)
+      let effectiveUser = user;
+      if (effectiveUser === undefined) {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        effectiveUser = currentUser || null;
+      }
 
       // 필터가 없으면 바로 campaigns 조회
       const hasFilters = !!(filters.q || filters.c1 || filters.c2);
@@ -96,7 +103,7 @@ export function useCampaigns(
 
       // 비로그인 사용자를 위한 데이터 마스킹
       const sanitizedCampaigns = campaigns?.map((campaign) => {
-        if (!user) {
+        if (!effectiveUser) {
           const { products } = campaign;
           return {
             ...campaign,

@@ -26,7 +26,7 @@ export function CampaignList() {
 
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: profile } = useUserProfile();
-  const { data: campaigns, isLoading } = useCampaigns(filters, profile?.user || null);
+  const { data: campaigns, isLoading } = useCampaigns(filters, profile?.user);
 
   if (categoriesLoading) {
     return (

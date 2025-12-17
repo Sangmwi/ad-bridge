@@ -89,8 +89,8 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
             <span className="text-neutral-600">가격:</span>
             <span className="font-semibold ml-2 text-neutral-900">
               <LockedValue
-                locked={product.price === null}
-                value={product.price !== null ? formatWon(product.price) : ""}
+                locked={!isLoggedIn}
+                value={product.price !== null ? formatWon(product.price) : "가격 정보 없음"}
                 preview="????원"
                 className="inline-flex"
               />

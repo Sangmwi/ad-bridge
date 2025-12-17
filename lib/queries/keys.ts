@@ -21,7 +21,7 @@ export const queryKeys = {
       q?: string;
       c1?: string;
       c2?: string;
-    }) => ["campaigns", "list", filters] as const,
+    }, userId?: string | null) => ["campaigns", "list", filters, userId] as const,
     details: () => ["campaigns", "detail"] as const,
     detail: (id: string) => ["campaigns", "detail", id] as const,
     stats: (id: string) => ["campaigns", id, "stats"] as const,

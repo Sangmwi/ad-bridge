@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
-import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
 import { CategoryBadge } from "@/components/primitives/CategoryBadge";
 import { LockedValue } from "@/components/patterns/LockedValue";
 import { createClient } from "@/utils/supabase/client";
@@ -118,7 +117,7 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 flex flex-col">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <h1 className="text-2xl md:text-3xl font-bold flex-1">{product.name}</h1>
                 {categoryName && <CategoryBadge name={categoryName} size="md" />}
@@ -126,11 +125,14 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
 
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 text-sm">
-                <RewardTypeBadge
-                  rewardType={campaign.reward_type}
-                  amount={campaign.reward_amount}
-                  size="md"
-                />
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
+                    {campaign.reward_type === "cps" ? "판매당" : "클릭당"}
+                  </span>
+                  <span className="font-semibold text-neutral-900">
+                    {campaign.reward_amount != null ? formatWon(campaign.reward_amount) : "-"}
+                  </span>
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
                     판매가
@@ -153,7 +155,7 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
               </p>
 
               {/* Conditions */}
-              {campaign.conditions?.min_followers && (
+              {campaign.conditions?.min_followers != null && campaign.conditions.min_followers > 0 && (
                 <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-border">
                   <p className="text-sm text-neutral-600">
                     <span className="font-semibold">최소 팔로워 수:</span>{" "}
@@ -163,14 +165,16 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
               )}
 
               {/* Apply Button */}
-              <Button
-                onClick={handleApply}
-                disabled={loading}
-                size="lg"
-                className="w-full md:w-auto"
-              >
-                {loading ? "신청 중..." : "캠페인 신청하기"}
-              </Button>
+              <div className="flex justify-end mt-auto pt-6">
+                <Button
+                  onClick={handleApply}
+                  disabled={loading}
+                  size="lg"
+                  className="w-full md:w-auto"
+                >
+                  {loading ? "신청 중..." : "캠페인 신청하기"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
