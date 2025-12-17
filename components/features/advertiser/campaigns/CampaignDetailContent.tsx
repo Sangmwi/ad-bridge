@@ -91,9 +91,8 @@ export function CampaignDetailContent({ campaignId }: CampaignDetailContentProps
             <ImageWithFallback
               src={product?.image_url || null}
               alt={product?.name || "제품 이미지"}
-              width={288}
-              height={216}
-              className="w-full h-full"
+              className="w-full h-full object-cover"
+              containerClassName="w-full h-full"
             />
           </div>
           <div className="flex-1 min-w-0 w-full">
