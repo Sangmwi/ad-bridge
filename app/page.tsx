@@ -17,7 +17,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       {/* Header removed (moved to layout) */}
       
       {/* Hero Section */}

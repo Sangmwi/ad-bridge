@@ -62,7 +62,7 @@ export default async function AdvertiserDashboard() {
   const activeCampaignsCount = campaigns?.filter((c) => c.status === "active").length || 0;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       {/* Header removed (moved to layout) */}
 
       <main>

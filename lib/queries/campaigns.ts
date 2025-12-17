@@ -73,7 +73,12 @@ export function useCampaigns(
             price,
             image_url,
             description,
-            category_id
+            category_id,
+            product_categories (
+              id,
+              name,
+              parent_id
+            )
           )
         `)
         .eq("status", "active");

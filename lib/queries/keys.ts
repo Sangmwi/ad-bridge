@@ -56,5 +56,11 @@ export const queryKeys = {
     myApplications: (creatorId: string) =>
       ["applications", "my", creatorId] as const,
   },
+
+  // Auth
+  auth: {
+    user: () => ["auth", "user"] as const,
+    profile: () => ["auth", "profile"] as const,
+  },
 } as const;
 

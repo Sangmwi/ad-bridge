@@ -6,12 +6,20 @@ import { LockedValue } from "@/components/patterns/LockedValue";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
 import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
+import { CategoryBadge } from "@/components/primitives/CategoryBadge";
+import Link from "next/link";
 
 export type Product = {
   name: string;
   price: number | null;
   image_url: string | null;
   description: string;
+  category_id?: string | null;
+  product_categories?: {
+    id: string;
+    name: string;
+    parent_id: string | null;
+  } | null;
 };
 
 export type Campaign = {
@@ -37,41 +45,9 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
 
   if (!product) return null;
 
-  const handleApply = async () => {
-    if (!isLoggedIn) {
-      window.location.href = "/auth/login";
-      return;
-    }
-
-    if (userRole === "advertiser") return;
-
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      
-      if (!user) return;
-
-      const { error } = await supabase.from("campaign_applications").insert({
-        campaign_id: campaign.id,
-        creator_id: user.id,
-        status: "pending",
-      });
-
-      if (error) {
-        if (error.code === "23505") {
-          alert("이미 신청한 캠페인입니다.");
-        } else {
-          throw error;
-        }
-      } else {
-        alert("신청이 완료되었습니다! 광고주의 승인을 기다려주세요.");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("신청 중 오류가 발생했습니다.");
-    }
-  };
+  // 카테고리 정보 추출
+  const category = product.product_categories;
+  const categoryName = category?.name || null;
 
   return (
     <div className="bg-white rounded-xl border border-border overflow-hidden hover:border-primary hover:shadow-md transition-all">
@@ -93,15 +69,20 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
       </div>
 
       <div className="p-6">
-        <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-        <p className="text-sm text-neutral-600 mb-4 line-clamp-2">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-bold text-lg flex-1">{product.name}</h3>
+          {categoryName && (
+            <CategoryBadge name={categoryName} size="sm" />
+          )}
+        </div>
+        <p className="text-xs text-neutral-600 mb-3 line-clamp-2 leading-relaxed">
           {product.description}
         </p>
-        {campaign.created_at ? (
-          <p className="text-xs text-neutral-500">
+        {campaign.created_at && (
+          <p className="text-xs text-neutral-500 mb-3">
             {formatTimeAgo(campaign.created_at)}
           </p>
-        ) : null}
+        )}
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
           <div className="text-sm">
@@ -122,9 +103,11 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
             </Button>
           )}
           {isLoggedIn && userRole === "creator" && (
-            <Button onClick={handleApply} size="sm">
-              신청하기
-            </Button>
+            <Link href={`/campaigns/${campaign.id}`}>
+              <Button size="sm" variant="outline">
+                자세히 보기
+              </Button>
+            </Link>
           )}
           {/* 광고주는 자신의 캠페인에 신청할 수 없으므로 버튼 표시하지 않음 */}
         </div>

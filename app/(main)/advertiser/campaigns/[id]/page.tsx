@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CampaignPerformancePanel } from "@/components/features/advertiser/campaigns/CampaignPerformancePanel";
 import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
+import { CategoryBadge } from "@/components/primitives/CategoryBadge";
 
 export default async function CampaignDetailPage({
   params,
@@ -40,7 +41,13 @@ export default async function CampaignDetailPage({
         name,
         price,
         image_url,
-        description
+        description,
+        category_id,
+        product_categories (
+          id,
+          name,
+          parent_id
+        )
       )
     `
     )
@@ -56,11 +63,22 @@ export default async function CampaignDetailPage({
     ? campaign.products[0]
     : campaign.products;
 
+  // Category extraction with type safety
+  let categoryName: string | null = null;
+  if (product && 'product_categories' in product) {
+    const category = (product as any).product_categories;
+    if (Array.isArray(category) && category.length > 0) {
+      categoryName = category[0]?.name || null;
+    } else if (category && typeof category === 'object' && 'name' in category) {
+      categoryName = category.name || null;
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       {/* Header removed (moved to layout) */}
 
-      <main>
+      <main className="">
         {/* Navigation */}
         <div className="mb-8">
           <Link
@@ -91,11 +109,14 @@ export default async function CampaignDetailPage({
           <div className="flex-1 min-w-0 w-full">
             <div className="flex flex-col">
               {/* Row 1: title + actions */}
-              <div className="flex items-center gap-2 w-full">
+              <div className="flex items-start gap-2 w-full">
                 <div className="min-w-0 flex-1">
-                  <h1 className="min-w-0 text-2xl sm:text-3xl font-bold wrap-break-word">
-                    {product?.name}
-                  </h1>
+                  <div className="flex items-start gap-3 mb-2">
+                    <h1 className="min-w-0 text-2xl sm:text-3xl font-bold wrap-break-word flex-1">
+                      {product?.name}
+                    </h1>
+                    {categoryName && <CategoryBadge name={categoryName} size="md" />}
+                  </div>
                 </div>
 
                 <div className="flex gap-2 flex-nowrap shrink-0">
@@ -146,15 +167,16 @@ export default async function CampaignDetailPage({
               {/* Row 3: meta */}
               <div className="mt-4 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm">
                 <div className="flex items-center gap-2">
-                  <RewardTypeBadge
-                    rewardType={campaign.reward_type}
-                    amount={campaign.reward_amount}
-                    size="md"
-                  />
+                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
+                    {campaign.reward_type === "cps" ? "판매당" : "클릭당"}
+                  </span>
+                  <span className="font-semibold text-neutral-900">
+                    {campaign.reward_amount != null ? formatWon(campaign.reward_amount) : "-"}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-600">
+                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
                     판매가
                   </span>
                   <span className="font-semibold text-neutral-900">
@@ -162,12 +184,17 @@ export default async function CampaignDetailPage({
                   </span>
                 </div>
               </div>
-
-              {/* Row 4: description */}
-              <p className="mt-5 text-sm sm:text-base text-neutral-600 leading-relaxed">
-                {product?.description}
-              </p>
             </div>
+          </div>
+        </div>
+
+        {/* Product Description - Separated Section */}
+        <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-8">
+          <h2 className="text-lg font-bold mb-4 text-neutral-900">제품 상세 설명</h2>
+          <div className="prose prose-sm max-w-none">
+            <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-line">
+              {product?.description || "상세 설명이 없습니다."}
+            </p>
           </div>
         </div>
 

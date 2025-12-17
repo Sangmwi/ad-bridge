@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
+import { queryKeys } from "./keys";
 
 export function useUser() {
   return useQuery({
-    queryKey: ["auth", "user"],
+    queryKey: queryKeys.auth.user(),
     queryFn: async () => {
       const supabase = createClient();
       const {
@@ -17,7 +18,7 @@ export function useUser() {
 
 export function useUserProfile() {
   return useQuery({
-    queryKey: ["auth", "profile"],
+    queryKey: queryKeys.auth.profile(),
     queryFn: async () => {
       const supabase = createClient();
       const {

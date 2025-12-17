@@ -14,14 +14,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUserProfile } from "@/lib/queries/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/utils/supabase/client";
+import { queryKeys } from "@/lib/queries/keys";
 
-type HeaderProps = {
-  user: any;
-  role: string | null;
-};
-
-export function Header({ user, role }: HeaderProps) {
+export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: profile, isLoading } = useUserProfile();
+  const queryClient = useQueryClient();
+  const user = profile?.user || null;
+  const role = profile?.role || null;
+
+  const handleSignOut = async () => {
+    // 1. 클라이언트 사이드에서도 로그아웃
+    const supabase = createClient();
+    await supabase.auth.signOut();
+
+    // 2. React Query 캐시 무효화
+    await queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile() });
+    await queryClient.clear(); // 모든 쿼리 캐시 클리어
+
+    // 3. 서버 사이드 로그아웃 및 리다이렉트
+    await signOut();
+  };
 
   // 역할에 따른 메뉴 아이템 설정
   const menuItems = [
@@ -67,7 +84,9 @@ export function Header({ user, role }: HeaderProps) {
 
           {/* Desktop CTA & Profile */}
           <div className="min-w-35 hidden md:flex md:items-center md:gap-x-3 md:justify-end">
-            {user ? (
+            {isLoading ? (
+              <div className="w-9 h-9 rounded-full bg-neutral-100 animate-pulse" />
+            ) : user ? (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -124,7 +143,7 @@ export function Header({ user, role }: HeaderProps) {
                   <DropdownMenuSeparator className="my-1 bg-neutral-100" />
 
                   <DropdownMenuItem
-                    onClick={() => signOut()}
+                    onClick={handleSignOut}
                     className="focus:bg-neutral-50 focus:text-neutral-600 cursor-pointer w-full flex items-center px-2 py-1.5 text-xs text-neutral-500 transition-colors"
                 >
                     <LogOut className="mr-2 h-3.5 w-3.5" />
@@ -171,7 +190,11 @@ export function Header({ user, role }: HeaderProps) {
             ))}
 
             <div className="pt-4 mt-4 border-t border-border">
-              {user ? (
+              {isLoading ? (
+                <div className="px-3 py-2">
+                  <div className="h-10 bg-neutral-100 rounded-md animate-pulse" />
+                </div>
+              ) : user ? (
                 <div className="space-y-3 px-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-neutral-900 truncate">
@@ -184,9 +207,9 @@ export function Header({ user, role }: HeaderProps) {
                   
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={async () => {
                       setMobileMenuOpen(false);
-                      signOut();
+                      await handleSignOut();
                     }}
                     className="w-full flex items-center justify-center gap-2 h-10 text-sm font-medium text-neutral-500 border border-border rounded-md hover:bg-neutral-50 transition-colors"
                   >

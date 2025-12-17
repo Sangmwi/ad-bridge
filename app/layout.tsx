@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "pretendard/dist/web/static/pretendard.css";
 import { Header } from "@/components/Header";
-import { createClient } from "@/utils/supabase/server";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const pretendard = localFont({
@@ -23,27 +22,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let role: string | null = null;
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    role = profile?.role || null;
-  }
-
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} antialiased`}>
         <QueryProvider>
-          <Header user={user} role={role} />
+          <Header />
           {children}
         </QueryProvider>
       </body>
