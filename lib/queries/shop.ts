@@ -13,8 +13,8 @@ export interface ShopItem {
       price: number;
       image_url: string | null;
       description: string;
-    };
-  };
+    } | null;
+  } | null;
 }
 
 export function useMyShop(creatorId: string) {
@@ -49,7 +49,9 @@ export function useMyShop(creatorId: string) {
         .eq("creator_id", user.id);
 
       if (error) throw error;
-      return (data as ShopItem[]) || [];
+      
+      // Supabase 관계형 쿼리는 배열을 반환하지만, 타입 호환성을 위해 unknown을 거쳐서 캐스팅
+      return (data as unknown as ShopItem[]) || [];
     },
     enabled: !!creatorId,
     staleTime: 30_000,
