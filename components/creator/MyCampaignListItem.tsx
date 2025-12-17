@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Copy, ExternalLink, CheckCircle } from "lucide-react";
+import { Copy, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "@/components/primitives/StatusBadge";
 import { ImageWithFallback } from "@/components/primitives/ImageWithFallback";
@@ -132,15 +132,13 @@ export function MyCampaignListItem({
                     )}
                   </Button>
                 </div>
-                <Link href={trackingLink} target="_blank">
+                <Link href={`/campaigns/${campaign.id}`}>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 shrink-0"
-                    disabled={!trackingLink}
+                    className="shrink-0"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    테스트
+                    자세히 보기
                   </Button>
                 </Link>
               </div>
