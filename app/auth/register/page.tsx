@@ -24,6 +24,7 @@ export default function RegisterPage() {
 
   const [formData, setFormData] = useState({
     // Step 2: 기본 정보
+    nickname: "",
     handle: "",
     // Step 3: 역할별 상세 정보
     // Creator
@@ -108,13 +109,22 @@ export default function RegisterPage() {
             id: user.id,
             email: user.email,
             role: role,
+            nickname: formData.nickname || null,
           },
           {
             onConflict: "id",
           }
         );
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error("Profile error details:", {
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code,
+        });
+        throw new Error(profileError.message || "프로필 생성에 실패했습니다.");
+      }
 
       // 2. 역할별 상세 정보 저장
       if (role === "creator") {
@@ -134,7 +144,10 @@ export default function RegisterPage() {
               onConflict: "id",
             }
           );
-        if (detailsError) throw detailsError;
+        if (detailsError) {
+          console.error("Creator details error:", detailsError);
+          throw new Error(detailsError.message || "크리에이터 정보 저장에 실패했습니다.");
+        }
       } else if (role === "advertiser") {
         const { error: detailsError } = await supabase
           .from("advertiser_details")
@@ -148,7 +161,10 @@ export default function RegisterPage() {
               onConflict: "id",
             }
           );
-        if (detailsError) throw detailsError;
+        if (detailsError) {
+          console.error("Creator details error:", detailsError);
+          throw new Error(detailsError.message || "크리에이터 정보 저장에 실패했습니다.");
+        }
       }
 
       // 3. React Query 캐시 무효화
@@ -159,7 +175,12 @@ export default function RegisterPage() {
       setStep(5);
     } catch (error) {
       console.error("Error registering:", error);
-      alert("등록 중 오류가 발생했습니다. 다시 시도해주세요.");
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === "string" 
+          ? error 
+          : "등록 중 오류가 발생했습니다.";
+      alert(`등록 중 오류가 발생했습니다: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -309,10 +330,31 @@ export default function RegisterPage() {
           <div className="bg-card rounded-2xl shadow-lg p-8 md:p-12 border border-border">
             <h2 className="text-2xl font-bold mb-2">기본 정보</h2>
             <p className="text-neutral-600 mb-8">
-              {role === "creator" ? "마이샵 URL에 사용될 핸들을 입력해주세요" : "브랜드명을 입력해주세요"}
+              닉네임과 {role === "creator" ? "마이샵 URL에 사용될 핸들" : "브랜드명"}을 입력해주세요
             </p>
 
             <div className="space-y-6">
+              {/* 닉네임 입력 (공통) */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  닉네임 (필수) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.nickname}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nickname: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+                  placeholder="표시될 이름을 입력하세요"
+                  required
+                  maxLength={20}
+                />
+                <p className="text-xs text-neutral-500 mt-1">
+                  최대 20자까지 입력 가능합니다
+                </p>
+              </div>
+
               {role === "creator" ? (
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -368,6 +410,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={handleNext}
                   disabled={
+                    !formData.nickname ||
                     (role === "creator" && !formData.handle) ||
                     (role === "advertiser" && !formData.brandName)
                   }

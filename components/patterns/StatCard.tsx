@@ -24,7 +24,7 @@ export function StatCard({ icon, label, value, badge, className }: StatCardProps
         {badge ? <div className="text-xs font-semibold">{badge}</div> : null}
       </div>
       <p className="text-sm text-neutral-600 mb-1">{label}</p>
-      <p className="text-3xl font-bold">{value}</p>
+      <div className="text-3xl font-bold">{value}</div>
     </Surface>
   );
 }

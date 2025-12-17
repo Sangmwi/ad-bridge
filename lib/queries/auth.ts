@@ -29,13 +29,14 @@ export function useUserProfile() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, nickname")
         .eq("id", user.id)
         .single();
 
       return {
         user,
         role: profile?.role || null,
+        nickname: profile?.nickname || null,
       };
     },
     staleTime: 5 * 60 * 1000,

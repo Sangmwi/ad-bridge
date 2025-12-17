@@ -1,6 +1,6 @@
 "use client";
 
-import { useCampaignClickCounts } from "@/lib/queries/dashboard";
+import { useDashboardStats } from "@/lib/queries/dashboard";
 import { CampaignListItem } from "@/components/patterns/CampaignListItem";
 import { formatWon } from "@/lib/format";
 import { EmptyState } from "@/components/patterns/EmptyState";
@@ -23,7 +23,8 @@ export function CampaignListWithStats({
   campaigns,
 }: CampaignListWithStatsProps) {
   const campaignIds = campaigns.map((c) => c.id);
-  const { data: clickCounts, isLoading } = useCampaignClickCounts(campaignIds);
+  const { data: stats, isLoading } = useDashboardStats(campaignIds);
+  const clickCounts = stats?.clickCounts || {};
 
   if (campaigns.length === 0) {
     return (

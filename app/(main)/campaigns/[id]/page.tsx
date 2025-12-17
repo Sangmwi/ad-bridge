@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { CampaignDetailForCreator } from "@/components/features/campaigns/CampaignDetailForCreator";
+import { CampaignDetailForCreatorSkeleton } from "@/components/features/campaigns/CampaignDetailForCreatorSkeleton";
 import { useCampaignDetail } from "@/lib/queries/campaigns";
 import { useUserProfile } from "@/lib/queries/auth";
 import { Campaign } from "@/lib/types/campaign";
@@ -32,11 +33,7 @@ export default function CampaignDetailPageForCreator() {
   }, [profile, profileLoading, router]);
 
   if (profileLoading || campaignLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="inline-block w-8 h-8 border-4 border-neutral-200 border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
+    return <CampaignDetailForCreatorSkeleton />;
   }
 
   if (error || !campaign) {

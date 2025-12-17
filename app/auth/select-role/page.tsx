@@ -11,6 +11,7 @@ export default function SelectRolePage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasExistingRole, setHasExistingRole] = useState(false); // 이미 역할이 있는지 여부
   const [formData, setFormData] = useState({
+    nickname: "",
     // Creator fields
     handle: "",
     bio: "",
@@ -77,6 +78,7 @@ export default function SelectRolePage() {
             id: user.id,
             email: user.email,
             role: role,
+            nickname: formData.nickname,
           },
           {
             onConflict: "id",
@@ -103,7 +105,10 @@ export default function SelectRolePage() {
               onConflict: "id",
             }
           );
-        if (detailsError) throw detailsError;
+        if (detailsError) {
+          console.error("Details error:", detailsError);
+          throw new Error(detailsError.message || "정보 저장에 실패했습니다.");
+        }
         router.push("/campaigns");
       } else if (role === "advertiser") {
         const { error: detailsError } = await supabase
@@ -118,12 +123,20 @@ export default function SelectRolePage() {
               onConflict: "id",
             }
           );
-        if (detailsError) throw detailsError;
+        if (detailsError) {
+          console.error("Details error:", detailsError);
+          throw new Error(detailsError.message || "정보 저장에 실패했습니다.");
+        }
         router.push("/advertiser/dashboard");
       }
     } catch (error) {
       console.error("Error updating role:", error);
-      alert("설정 중 오류가 발생했습니다.");
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === "string" 
+          ? error 
+          : "설정 중 오류가 발생했습니다.";
+      alert(`설정 중 오류가 발생했습니다: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -199,6 +212,27 @@ export default function SelectRolePage() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 닉네임 입력 (공통) */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              닉네임 (필수) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.nickname}
+              onChange={(e) =>
+                setFormData({ ...formData, nickname: e.target.value })
+              }
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
+              placeholder="표시될 이름을 입력하세요"
+              maxLength={20}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              최대 20자까지 입력 가능합니다
+            </p>
+          </div>
+
           {role === "creator" ? (
             <div className="space-y-4">
             <div>
@@ -323,7 +357,7 @@ export default function SelectRolePage() {
             type="submit"
             size="lg"
             className="w-full mt-6"
-            disabled={loading}
+            disabled={loading || !formData.nickname || (role === "creator" && !formData.handle) || (role === "advertiser" && !formData.brandName)}
           >
             {loading ? "저장 중..." : "시작하기"}
           </Button>

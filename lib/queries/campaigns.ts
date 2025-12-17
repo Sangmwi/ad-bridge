@@ -126,10 +126,12 @@ export function useCampaigns(
 
 /**
  * 단일 캠페인 상세 정보를 가져오는 훅
+ * @param includeInactive - true인 경우 inactive 상태의 캠페인도 조회 (광고주용)
  */
 export function useCampaignDetail(
   id: string,
-  user: { id: string } | null | undefined = undefined
+  user: { id: string } | null | undefined = undefined,
+  includeInactive: boolean = false
 ) {
   return useQuery({
     queryKey: queryKeys.campaigns.detail(id),
@@ -143,7 +145,7 @@ export function useCampaignDetail(
         effectiveUser = currentUser || null;
       }
 
-      const { data: campaign, error } = await supabase
+      let query = supabase
         .from("campaigns")
         .select(`
           id,
@@ -165,9 +167,14 @@ export function useCampaignDetail(
             )
           )
         `)
-        .eq("id", id)
-        .eq("status", "active")
-        .single();
+        .eq("id", id);
+
+      // 크리에이터는 active만, 광고주는 모든 상태 조회 가능
+      if (!includeInactive) {
+        query = query.eq("status", "active");
+      }
+
+      const { data: campaign, error } = await query.single();
 
       if (error) throw error;
       if (!campaign) return null;

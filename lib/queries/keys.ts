@@ -57,6 +57,15 @@ export const queryKeys = {
       ["applications", "my", creatorId] as const,
   },
 
+  // Advertiser
+  advertiser: {
+    all: ["advertiser"] as const,
+    campaigns: (advertiserId: string) =>
+      ["advertiser", "campaigns", advertiserId] as const,
+    applications: (advertiserId: string) =>
+      ["advertiser", "applications", advertiserId] as const,
+  },
+
   // Auth
   auth: {
     user: () => ["auth", "user"] as const,

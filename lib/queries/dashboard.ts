@@ -46,30 +46,15 @@ export function useDashboardStats(campaignIds: string[]) {
   });
 }
 
+/**
+ * @deprecated useDashboardStats를 사용하세요. clickCounts가 포함되어 있습니다.
+ * 중복 요청을 방지하기 위해 통합되었습니다.
+ */
 export function useCampaignClickCounts(campaignIds: string[]) {
-  return useQuery({
-    queryKey: queryKeys.dashboard.clickCounts(campaignIds),
-    queryFn: async () => {
-      const supabase = createClient();
-      
-      const { data: clicks } =
-        campaignIds.length > 0
-          ? await supabase
-              .from("clicks")
-              .select("campaign_id")
-              .in("campaign_id", campaignIds)
-          : { data: [] };
-
-      return (clicks || []).reduce(
-        (acc, click) => {
-          acc[click.campaign_id] = (acc[click.campaign_id] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>
-      );
-    },
-    enabled: campaignIds.length > 0,
-    staleTime: 30_000,
-  });
+  const { data: stats } = useDashboardStats(campaignIds);
+  return {
+    data: stats?.clickCounts || {},
+    isLoading: !stats,
+  };
 }
 

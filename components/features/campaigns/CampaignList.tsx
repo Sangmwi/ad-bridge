@@ -2,12 +2,14 @@
 
 import { useCampaigns, useCategories } from "@/lib/queries/campaigns";
 import { useUserProfile } from "@/lib/queries/auth";
-import { CampaignCard, type Campaign } from "@/components/CampaignCard";
+import { CampaignCard } from "@/components/CampaignCard";
 import { CardGrid } from "@/components/patterns/CardGrid";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { CampaignExploreFilterBar } from "./CampaignExploreFilterBar";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { Campaign } from "@/lib/types/campaign";
+import { CampaignListSkeleton } from "./CampaignListSkeleton";
 
 export function CampaignList() {
   const searchParams = useSearchParams();
@@ -25,15 +27,11 @@ export function CampaignList() {
   );
 
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { data: profile } = useUserProfile();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
   const { data: campaigns, isLoading } = useCampaigns(filters, profile?.user);
 
-  if (categoriesLoading) {
-    return (
-      <div className="text-center py-20">
-        <div className="inline-block w-8 h-8 border-4 border-neutral-200 border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
+  if (categoriesLoading || profileLoading) {
+    return <CampaignListSkeleton />;
   }
 
   return (

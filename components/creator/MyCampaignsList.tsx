@@ -4,6 +4,7 @@ import { useMyCampaigns, useCreatorClickCounts } from "@/lib/queries/creator";
 import { useUser } from "@/lib/queries/auth";
 import { MyCampaignListItem } from "@/components/creator/MyCampaignListItem";
 import { EmptyState } from "@/components/patterns/EmptyState";
+import { MyCampaignsListSkeleton } from "./MyCampaignsListSkeleton";
 import Link from "next/link";
 
 export function MyCampaignsList() {
@@ -14,11 +15,7 @@ export function MyCampaignsList() {
   );
 
   if (userLoading || isLoading || clicksLoading) {
-    return (
-      <div className="text-center py-20">
-        <div className="inline-block w-8 h-8 border-4 border-neutral-200 border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
+    return <MyCampaignsListSkeleton />;
   }
 
   if (!user) {
