@@ -4,6 +4,7 @@ import "./globals.css";
 import "pretendard/dist/web/static/pretendard.css";
 import { Header } from "@/components/Header";
 import { createClient } from "@/utils/supabase/server";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const pretendard = localFont({
   src: "../node_modules/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
@@ -41,8 +42,10 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} antialiased`}>
-        <Header user={user} role={role} />
-        {children}
+        <QueryProvider>
+          <Header user={user} role={role} />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

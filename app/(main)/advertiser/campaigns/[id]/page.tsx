@@ -1,19 +1,12 @@
-import { Header } from "@/components/Header";
 import { createClient } from "@/utils/supabase/server";
-import { CreatorManagementTable } from "@/components/CreatorManagementTable";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   ArrowLeft,
   Clock,
-  MousePointer2,
-  Users,
-  DollarSign,
   MoreHorizontal,
 } from "lucide-react";
 import { formatWon } from "@/lib/format";
-import { StatCard } from "@/components/patterns/StatCard";
-import { Surface } from "@/components/primitives/Surface";
 import { StatusBadge } from "@/components/primitives/StatusBadge";
 import { formatTimeAgo } from "@/lib/time";
 import {
@@ -22,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CampaignPerformancePanel } from "@/components/features/advertiser/campaigns/CampaignPerformancePanel";
 
 export default async function CampaignDetailPage({
   params,
@@ -55,84 +49,6 @@ export default async function CampaignDetailPage({
   if (campaignError || !campaign) {
     return <div>캠페인을 찾을 수 없습니다.</div>;
   }
-
-  // 2. 전체 클릭 로그 조회 (통계 집계용)
-  const { data: clicks } = await supabase
-    .from("clicks")
-    .select("creator_id")
-    .eq("campaign_id", id);
-
-  // 크리에이터별 클릭 수 집계
-  const clickCountsByCreator = (clicks || []).reduce((acc, click) => {
-    acc[click.creator_id] = (acc[click.creator_id] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const totalClicks = clicks?.length || 0;
-  // 임시 비용 계산 (단순 클릭당 비용이 아닌, CPS일 경우 판매 연동이 필요하나 현재는 예상치로 표시하거나 0으로)
-  // 여기서는 reward_type이 cpc일 경우만 계산하고, cps는 아직 트래킹 안되므로 0
-  const estimatedSpend =
-    campaign.reward_type === "cpc" ? totalClicks * campaign.reward_amount : 0;
-
-  // 3. 참여 크리에이터 조회
-  const { data: applications, error: appError } = await supabase
-    .from("campaign_applications")
-    .select(
-      `
-      id,
-      status,
-      created_at,
-      creator_id,
-      profiles (
-        email,
-        creator_details (
-          handle,
-          bio,
-          profile_image_url,
-          instagram_url,
-          youtube_url,
-          tiktok_url,
-          followers_count
-        )
-      )
-    `
-    )
-    .eq("campaign_id", id)
-    .in("status", ["approved", "rejected"]); // 승인되었거나 거절된(중단된) 이력 포함
-
-  if (appError) {
-    console.error("Error fetching creators:", appError);
-  }
-
-  // 4. 데이터 매핑 (테이블용 포맷)
-  const creatorsData = (applications || []).map((app: any) => {
-    // profiles.creator_details는 배열일 수도, 객체일 수도 있으므로 안전하게 접근
-    const details = Array.isArray(app.profiles?.creator_details)
-      ? app.profiles.creator_details[0]
-      : app.profiles?.creator_details;
-
-    return {
-      applicationId: app.id,
-      creatorId: app.creator_id,
-      status: app.status,
-      joinedAt: app.created_at,
-      email: app.profiles?.email || "",
-      handle: details?.handle || "Unknown",
-      bio: details?.bio || null,
-      profileImage: details?.profile_image_url || null,
-      channels: {
-        instagram: details?.instagram_url,
-        youtube: details?.youtube_url,
-        tiktok: details?.tiktok_url,
-      },
-      followers: details?.followers_count || 0,
-      clicks: clickCountsByCreator[app.creator_id] || 0,
-    };
-  });
-
-  const activeCreatorsCount = creatorsData.filter(
-    (c) => c.status === "approved"
-  ).length;
 
   // Product Data
   const product = Array.isArray(campaign.products)
@@ -194,7 +110,7 @@ export default async function CampaignDetailPage({
 
                   {/* Mobile actions */}
                   <div className="sm:hidden">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
                           <MoreHorizontal className="h-5 w-5" />
@@ -256,45 +172,10 @@ export default async function CampaignDetailPage({
           </div>
         </div>
 
-        {/* Section B: KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard
-            icon={<MousePointer2 className="w-6 h-6" />}
-            label="총 유입 클릭"
-            value={totalClicks.toLocaleString()}
-          />
-          <StatCard
-            icon={<Users className="w-6 h-6" />}
-            label="참여 크리에이터"
-            value={
-              <>
-                {activeCreatorsCount.toLocaleString()}
-                <span className="text-sm text-gray-400 ml-1 font-normal">
-                  / {creatorsData.length}명
-                </span>
-              </>
-            }
-          />
-          <StatCard
-            icon={<DollarSign className="w-6 h-6" />}
-            label={
-              campaign.reward_type === "cpc" ? "총 지출 (예상)" : "총 지출"
-            }
-            value={
-              <>
-                {formatWon(estimatedSpend)}
-                {campaign.reward_type === "cps" ? (
-                  <span className="block text-xs text-gray-400 mt-1 font-normal">
-                    * 판매 연동 전이므로 0원으로 표시됩니다.
-                  </span>
-                ) : null}
-              </>
-            }
-          />
-        </div>
-
-        {/* Section C: Creator Management Table */}
-        <CreatorManagementTable data={creatorsData} campaignId={campaign.id} />
+        <CampaignPerformancePanel
+          campaignId={campaign.id}
+          rewardType={campaign.reward_type}
+        />
       </main>
     </div>
   );
