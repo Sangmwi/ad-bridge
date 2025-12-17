@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "pretendard/dist/web/static/pretendard.css";
+import { Header } from "@/components/Header";
+import { createClient } from "@/utils/supabase/server";
 
 const pretendard = localFont({
   src: "../node_modules/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
@@ -15,14 +17,33 @@ export const metadata: Metadata = {
     "광고주와 크리에이터를 연결하는 성과형 커머스 플랫폼. 마이샵을 만들고, 좋아하는 제품을 판매하며, 투명한 수수료를 받으세요.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let role: string | null = null;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    role = profile?.role || null;
+  }
+
   return (
     <html lang="ko">
-      <body className={`${pretendard.variable} antialiased`}>{children}</body>
+      <body className={`${pretendard.variable} antialiased`}>
+        <Header user={user} role={role} />
+        {children}
+      </body>
     </html>
   );
 }

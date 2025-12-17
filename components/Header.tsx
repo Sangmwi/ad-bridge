@@ -1,145 +1,141 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { Menu, X, LogOut, User, LayoutDashboard } from "lucide-react";
 import LogoRow from "@/assets/logos/Ad-Bridge-logo-row.svg";
+import { signOut } from "@/app/actions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function Header() {
+type HeaderProps = {
+  user: any;
+  role: string | null;
+};
+
+export function Header({ user, role }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const supabase = createClient();
-  const router = useRouter();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-
-        if (profile) {
-          setRole(profile.role);
-        }
-      }
-    };
-
-    checkUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", session.user.id)
-          .single();
-        if (profile) setRole(profile.role);
-      } else {
-        setUser(null);
-        setRole(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleSignOut = async (e?: React.MouseEvent) => {
-    e?.preventDefault(); // 기본 동작 방지
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setRole(null);
-      window.location.href = "/";
-    } catch (error) {
-      console.error(error);
-      // 에러 발생 시에도 강제 이동
-      window.location.href = "/";
-    }
-  };
-
-  const getDashboardLink = () => {
-    if (role === "advertiser") return "/advertiser/dashboard";
-    if (role === "creator") return "/creator/dashboard";
-    return "/auth/select-role";
-  };
-
-  const navigation = [
-    { name: "주요 기능", href: "/#features" },
-    { name: "이용 방법", href: "/#how-it-works" },
-    { name: "크리에이터", href: "/#creators" },
-    { name: "광고주", href: "/#brands" },
+  // 역할에 따른 메뉴 아이템 설정
+  const menuItems = [
+    { name: "캠페인 탐색", href: "/campaigns" },
   ];
 
+  if (role === "creator") {
+    menuItems.push({ name: "내 캠페인", href: "/creator/my-campaigns" });
+  } else if (role === "advertiser") {
+    menuItems.push({ name: "대시보드", href: "/advertiser/dashboard" });
+    }
+
+  const getRoleText = () => {
+    if (role === "advertiser") return "광고주";
+    if (role === "creator") return "크리에이터";
+    return "";
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-[var(--border)]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-border">
       <nav className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 font-bold text-xl text-[var(--foreground)]"
+            className="flex items-center gap-2 font-bold text-xl text-foreground"
           >
             <LogoRow width={160} height={40} />
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:gap-x-8">
-            {navigation.map((item) => (
+            {menuItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-[var(--neutral-600)] hover:text-[var(--primary)] transition-colors"
+                className="text-sm font-medium text-neutral-600 hover:text-primary transition-colors"
               >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA */}
+          {/* Desktop CTA & Profile */}
           <div className="hidden md:flex md:items-center md:gap-x-3">
             {user ? (
-              <>
-                <span className="text-sm text-[var(--neutral-600)]">
-                  {user.email?.split("@")[0]}님
-                </span>
-                <Link href={getDashboardLink()}>
-                  <Button size="sm" className="gap-2">
-                    <LayoutDashboard className="w-4 h-4" />
-                    대시보드
-                  </Button>
-                </Link>
-                <Link href="/auth/logout">
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    title="로그아웃"
+                    className="rounded-full overflow-hidden p-0 h-9 w-9 focus:ring-0"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage
+                        src={user.user_metadata?.avatar_url}
+                        alt={user.email}
+                      />
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs">
+                        {user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
-                </Link>
-              </>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-56 p-2 hidden md:block bg-white/80 backdrop-blur-lg"
+                  align="end"
+                  forceMount
+                >
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium text-neutral-900 truncate">
+                      {user.email}
+                    </p>
+                    {role && (
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        {getRoleText()}
+                      </p>
+                    )}
+                  </div>
+
+                  <DropdownMenuSeparator className="my-1 bg-neutral-100" />
+
+                  {/* 역할별 추가 메뉴 */}
+                  {role === "creator" && (
+                    <DropdownMenuItem asChild className="focus:bg-primary/5 focus:text-primary cursor-pointer">
+                      <Link href="/creator/my-campaigns" className="w-full flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>내 캠페인</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {role === "advertiser" && (
+                    <DropdownMenuItem asChild className="focus:bg-primary/5 focus:text-primary cursor-pointer">
+                      <Link href="/advertiser/dashboard" className="w-full flex items-center">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>대시보드</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuSeparator className="my-1 bg-neutral-100" />
+
+                  <DropdownMenuItem
+                    onClick={() => signOut()}
+                    className="focus:bg-red-50 focus:text-red-600 cursor-pointer w-full flex items-center px-2 py-1.5 text-xs text-neutral-500 transition-colors"
+                >
+                    <LogOut className="mr-2 h-3.5 w-3.5" />
+                    <span>로그아웃</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <>
                 <Link href="/auth/login">
                   <Button size="sm">로그인/가입</Button>
                 </Link>
-              </>
             )}
           </div>
 
@@ -147,7 +143,7 @@ export function Header() {
           <div className="md:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-md p-2 text-[var(--foreground)]"
+              className="inline-flex items-center justify-center rounded-md p-2 text-neutral-700"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <span className="sr-only">메뉴 열기</span>
@@ -162,59 +158,52 @@ export function Header() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 border-t border-[var(--border)] mt-2">
-            {navigation.map((item) => (
+          <div className="md:hidden py-4 border-t border-border mt-2 space-y-1">
+            {menuItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="block px-3 py-2 text-base font-medium text-[var(--neutral-600)] hover:text-[var(--primary)] rounded-lg hover:bg-[var(--neutral-50)]"
+                className="block px-3 py-2 text-base font-medium text-neutral-600 hover:text-primary hover:bg-neutral-50 rounded-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <div className="pt-4 space-y-2 border-t border-[var(--border)]">
+
+            <div className="pt-4 mt-4 border-t border-border">
               {user ? (
-                <>
-                  <Link
-                    href={getDashboardLink()}
-                    onClick={() => setMobileMenuOpen(false)}
+                <div className="space-y-3 px-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-neutral-900 truncate">
+                      {user.email}
+                    </span>
+                    <span className="text-xs text-neutral-500 bg-neutral-100 px-2 py-1 rounded-full">
+                      {getRoleText()}
+                    </span>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      signOut();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 h-10 text-sm font-medium text-neutral-500 border border-border rounded-md hover:bg-neutral-50 transition-colors"
                   >
-                    <Button className="w-full gap-2 justify-start">
-                      <LayoutDashboard className="w-4 h-4" />
-                      대시보드
-                    </Button>
-                  </Link>
-                  <Link
-                    href="/auth/logout"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Button
-                      variant="ghost"
-                      className="w-full gap-2 justify-start"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      로그아웃
-                    </Button>
-                  </Link>
-                </>
+                    <LogOut className="h-4 w-4" />
+                    로그아웃
+                  </button>
+                </div>
               ) : (
-                <>
+                <div className="space-y-2 px-3">
                   <Link
                     href="/auth/login"
                     onClick={() => setMobileMenuOpen(false)}
+                    className="block"
                   >
-                    <Button variant="ghost" className="w-full">
-                      로그인
-                    </Button>
+                    <Button className="w-full">로그인/가입</Button>
                   </Link>
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Button className="w-full">시작하기</Button>
-                  </Link>
-                </>
+                </div>
               )}
             </div>
           </div>

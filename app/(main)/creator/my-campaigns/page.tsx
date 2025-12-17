@@ -3,6 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { MyCampaignCard } from "@/components/MyCampaignCard";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/common/PageHeader";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export default async function MyCampaignsPage() {
   const supabase = await createClient();
@@ -41,53 +43,58 @@ export default async function MyCampaignsPage() {
     console.error("Error fetching my campaigns:", error);
   }
 
+  // 내 클릭 성과 조회
+  const { data: myClicks } = await supabase
+    .from("clicks")
+    .select("campaign_id")
+    .eq("creator_id", user.id);
+
+  // 캠페인별 클릭 수 집계
+  const clickCounts = (myClicks || []).reduce(
+    (acc, click) => {
+      acc[click.campaign_id] = (acc[click.campaign_id] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
   const myCampaigns = applications || [];
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      {/* Header removed (moved to layout) */}
 
-      <main className="max-w-7xl mx-auto px-6 py-20">
-        <div className="flex items-center gap-4 mb-8">
-          <Link
-            href="/creator/dashboard"
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold">마이 캠페인</h1>
-            <p className="text-gray-500 mt-1">
-              승인된 캠페인의 홍보 링크를 생성하고 관리하세요.
-            </p>
-          </div>
-        </div>
+      <main className="max-w-7xl mx-auto">
+        <PageHeader
+          title="마이 캠페인"
+          description="승인된 캠페인의 홍보 링크를 생성하고 관리하세요."
+        />
 
         {myCampaigns.length > 0 ? (
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {myCampaigns.map((app: any) => (
               <MyCampaignCard
                 key={app.id}
                 applicationId={app.id}
                 campaign={app.campaigns}
                 creatorId={user.id}
+                clicks={clickCounts[app.campaigns.id] || 0}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-32 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              아직 승인된 캠페인이 없어요 😢
-            </h3>
-            <p className="text-gray-500 mb-6">
-              새로운 캠페인을 찾아 신청해보세요!
-            </p>
-            <Link href="/creator/dashboard">
-              <button className="px-6 py-3 bg-[var(--primary)] text-white rounded-lg font-bold hover:bg-[var(--primary-dark)] transition-colors">
+          <EmptyState
+            size="lg"
+            title="아직 승인된 캠페인이 없어요"
+            description="새로운 캠페인을 찾아 신청해보세요!"
+            action={
+              <Link href="/campaigns">
+              <button className="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors">
                 캠페인 탐색하러 가기
               </button>
             </Link>
-          </div>
+            }
+          />
         )}
       </main>
     </div>

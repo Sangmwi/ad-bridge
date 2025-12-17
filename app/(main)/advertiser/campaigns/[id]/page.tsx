@@ -4,6 +4,7 @@ import { CreatorManagementTable } from "@/components/CreatorManagementTable";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Clock, MousePointer2, Users, DollarSign } from "lucide-react";
+import { formatWon } from "@/lib/format";
 
 export default async function CampaignDetailPage({
   params,
@@ -126,9 +127,9 @@ export default async function CampaignDetailPage({
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      {/* Header removed (moved to layout) */}
 
-      <main className="max-w-7xl mx-auto px-6 py-20">
+      <main>
         {/* Navigation */}
         <div className="mb-8">
           <Link
@@ -141,7 +142,7 @@ export default async function CampaignDetailPage({
         </div>
 
         {/* Section A: Campaign Overview */}
-        <div className="bg-white rounded-2xl border border-[var(--border)] p-8 mb-8 flex flex-col md:flex-row gap-8 items-start">
+        <div className="bg-white rounded-2xl border border-border p-8 mb-8 flex flex-col md:flex-row gap-8 items-start">
           <div className="w-full md:w-64 h-48 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
             {product?.image_url ? (
               <img
@@ -175,14 +176,14 @@ export default async function CampaignDetailPage({
                   <div>
                     <span className="text-gray-500 block">보상 방식</span>
                     <span className="font-semibold text-gray-900">
-                      {campaign.reward_type === "cps" ? "판매당" : "클릭당"} ₩
-                      {campaign.reward_amount.toLocaleString()}
+                      {campaign.reward_type === "cps" ? "판매당" : "클릭당"}{" "}
+                      {formatWon(campaign.reward_amount)}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-500 block">판매가</span>
                     <span className="font-semibold text-gray-900">
-                      ₩{product?.price.toLocaleString()}
+                      {product?.price != null ? formatWon(product.price) : "-"}
                     </span>
                   </div>
                   <div>
@@ -203,7 +204,7 @@ export default async function CampaignDetailPage({
 
         {/* Section B: KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                 <MousePointer2 className="w-5 h-5" />
@@ -212,7 +213,7 @@ export default async function CampaignDetailPage({
             </div>
             <p className="text-3xl font-bold">{totalClicks.toLocaleString()}</p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-green-50 text-green-600 rounded-lg">
                 <Users className="w-5 h-5" />
@@ -226,7 +227,7 @@ export default async function CampaignDetailPage({
               </span>
             </p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
                 <DollarSign className="w-5 h-5" />
@@ -236,7 +237,7 @@ export default async function CampaignDetailPage({
               </span>
             </div>
             <p className="text-3xl font-bold">
-              ₩{estimatedSpend.toLocaleString()}
+              {formatWon(estimatedSpend)}
             </p>
             {campaign.reward_type === "cps" && (
               <p className="text-xs text-gray-400 mt-1">

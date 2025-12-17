@@ -58,16 +58,17 @@ type Creator = {
 const ChannelIcon = ({ type, url }: { type: string; url?: string }) => {
   if (!url) return null;
   
-  let icon = <ExternalLink className="w-4 h-4" />;
-  if (type === "instagram") icon = <Instagram className="w-4 h-4" />;
-  if (type === "youtube") icon = <Youtube className="w-4 h-4" />;
+  let icon = <ExternalLink className="w-5 h-5" />;
+  if (type === "instagram") icon = <Instagram className="w-5 h-5" />;
+  if (type === "youtube") icon = <Youtube className="w-5 h-5" />;
+  if (type === "tiktok") icon = <span className="font-bold text-xs">TikTok</span>;
   
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-gray-400 hover:text-[var(--primary)] transition-colors"
+      className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-primary hover:text-white transition-all"
       onClick={(e) => e.stopPropagation()}
     >
       {icon}
@@ -129,13 +130,13 @@ export function CreatorManagementTable({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--border)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm">
       {/* Header & Filter */}
-      <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-gray-50">
-        <h3 className="font-bold">참여 크리에이터 ({creators.length})</h3>
+      <div className="p-4 border-b border-border flex justify-between items-center bg-white">
+        <h3 className="font-bold text-lg">참여 크리에이터 <span className="text-neutral-400 text-sm font-normal ml-1">{creators.length}명</span></h3>
         <div className="flex gap-2">
           <select
-            className="text-sm border rounded-lg px-3 py-2 bg-white"
+            className="text-sm border border-border rounded-lg px-3 py-2 bg-white hover:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
             onChange={(e) =>
               setSortConfig({
                 key: e.target.value as "clicks" | "joinedAt",
@@ -152,26 +153,26 @@ export function CreatorManagementTable({
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 text-gray-500 font-medium border-b">
+          <thead className="bg-neutral-50 text-neutral-500 font-medium border-b border-border">
             <tr>
-              <th className="px-6 py-3">크리에이터</th>
-              <th className="px-6 py-3">채널</th>
-              <th className="px-6 py-3 text-right">팔로워</th>
-              <th className="px-6 py-3 text-right">기여도 (클릭)</th>
-              <th className="px-6 py-3 text-center">상태</th>
-              <th className="px-6 py-3 text-right">관리</th>
+              <th className="px-6 py-3 whitespace-nowrap">크리에이터</th>
+              <th className="px-6 py-3 whitespace-nowrap">채널</th>
+              <th className="px-6 py-3 text-right whitespace-nowrap">팔로워</th>
+              <th className="px-6 py-3 text-right whitespace-nowrap">기여도 (클릭)</th>
+              <th className="px-6 py-3 text-center whitespace-nowrap">상태</th>
+              <th className="px-6 py-3 text-right whitespace-nowrap">관리</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-neutral-100">
             {sortedCreators.map((creator) => (
               <tr
                 key={creator.creatorId}
-                className="hover:bg-gray-50 transition-colors cursor-pointer"
+                className="hover:bg-neutral-50 transition-colors cursor-pointer group"
                 onClick={() => setSelectedCreator(creator)}
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center overflow-hidden border border-border">
                       {creator.profileImage ? (
                         <img
                           src={creator.profileImage}
@@ -179,24 +180,24 @@ export function CreatorManagementTable({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-gray-500 font-bold">
+                        <span className="text-neutral-400 font-bold">
                           {creator.handle.substring(0, 1).toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div>
-                      <div className="font-semibold flex items-center gap-1">
+                      <div className="font-semibold flex items-center gap-1 text-neutral-900">
                         {creator.handle}
                         {creator.followers > 1000 && (
-                          <ShieldCheck className="w-3 h-3 text-[var(--primary)]" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
                         )}
                       </div>
-                      <div className="text-xs text-gray-500">{creator.email}</div>
+                      <div className="text-xs text-neutral-500">{creator.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5">
                     <ChannelIcon
                       type="instagram"
                       url={creator.channels.instagram}
@@ -205,31 +206,33 @@ export function CreatorManagementTable({
                     <ChannelIcon type="tiktok" url={creator.channels.tiktok} />
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right font-medium text-neutral-600">
                   {creator.followers.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 text-right font-mono">
-                  <div className="flex items-center justify-end gap-1 font-bold text-[var(--primary)]">
-                    {creator.clicks.toLocaleString()}
-                    <span className="text-xs font-normal text-gray-400">
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="font-bold text-lg text-primary">{creator.clicks.toLocaleString()}</span>
+                    <span className="text-xs font-normal text-neutral-400 mt-1">
                       clicks
                     </span>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
                       creator.status === "approved"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        ? "bg-green-50 text-green-700 border-green-200"
+                        : "bg-red-50 text-red-700 border-red-200"
                     }`}
                   >
                     {creator.status === "approved" ? "활동중" : "중단됨"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button
-                    className="p-2 hover:bg-gray-100 rounded-full text-gray-500"
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-3 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleStatusUpdate(
@@ -239,7 +242,7 @@ export function CreatorManagementTable({
                     }}
                   >
                     {creator.status === "approved" ? "중단" : "복구"}
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -250,67 +253,67 @@ export function CreatorManagementTable({
       {/* Detail Modal */}
       {selectedCreator && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
           onClick={() => setSelectedCreator(null)}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn"
+            className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b text-center bg-gray-50">
-              <div className="w-20 h-20 rounded-full bg-white mx-auto mb-4 flex items-center justify-center shadow-sm overflow-hidden border-2 border-white">
+            <div className="p-8 border-b border-border text-center bg-neutral-50/50">
+              <div className="w-24 h-24 rounded-full bg-white mx-auto mb-5 flex items-center justify-center shadow-md overflow-hidden border-4 border-white">
                 {selectedCreator.profileImage ? (
                   <img
                     src={selectedCreator.profileImage}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-2xl font-bold text-gray-400">
+                  <span className="text-3xl font-bold text-neutral-300">
                     {selectedCreator.handle.substring(0, 1)}
                   </span>
                 )}
               </div>
-              <h2 className="text-2xl font-bold">{selectedCreator.handle}</h2>
-              <p className="text-gray-500 text-sm">{selectedCreator.email}</p>
+              <h2 className="text-2xl font-bold text-neutral-900">{selectedCreator.handle}</h2>
+              <p className="text-neutral-500 text-sm mt-1">{selectedCreator.email}</p>
               
-              <div className="flex justify-center gap-4 mt-4">
+              <div className="flex justify-center gap-3 mt-6">
                 <ChannelIcon type="instagram" url={selectedCreator.channels.instagram} />
                 <ChannelIcon type="youtube" url={selectedCreator.channels.youtube} />
                 <ChannelIcon type="tiktok" url={selectedCreator.channels.tiktok} />
               </div>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-8 space-y-8">
                <div>
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-2">
                   소개
                 </label>
-                <p className="mt-1 text-gray-700">
-                  {selectedCreator.bio || "소개가 없습니다."}
+                <p className="text-neutral-700 leading-relaxed bg-neutral-50 p-4 rounded-lg text-sm">
+                  {selectedCreator.bio || "등록된 소개가 없습니다."}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 rounded-xl text-center">
-                  <p className="text-xs text-blue-600 font-bold uppercase">
+                <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-2xl text-center">
+                  <p className="text-xs text-blue-600 font-bold uppercase tracking-wider">
                     총 팔로워
                   </p>
-                  <p className="text-2xl font-bold text-blue-900 mt-1">
+                  <p className="text-2xl font-bold text-blue-900 mt-2">
                     {selectedCreator.followers.toLocaleString()}
                   </p>
                 </div>
-                <div className="p-4 bg-green-50 rounded-xl text-center">
-                  <p className="text-xs text-green-600 font-bold uppercase">
+                <div className="p-5 bg-green-50/50 border border-green-100 rounded-2xl text-center">
+                  <p className="text-xs text-green-600 font-bold uppercase tracking-wider">
                     기여한 클릭
                   </p>
-                  <p className="text-2xl font-bold text-green-900 mt-1">
+                  <p className="text-2xl font-bold text-green-900 mt-2">
                     {selectedCreator.clicks.toLocaleString()}
                   </p>
                 </div>
               </div>
 
               <Button
-                className="w-full"
+                className="w-full h-12 text-base"
                 variant="outline"
                 onClick={() => setSelectedCreator(null)}
               >

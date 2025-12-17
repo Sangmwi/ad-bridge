@@ -48,7 +48,7 @@ export async function GET(request: Request) {
 
           // 크리에이터 상세정보 있음 → 대시보드로
           if (creator) {
-            return NextResponse.redirect(`${origin}/creator/dashboard`);
+            return NextResponse.redirect(`${origin}/campaigns`);
           }
         } else if (profile.role === "advertiser") {
           const { data: advertiser } = await supabase

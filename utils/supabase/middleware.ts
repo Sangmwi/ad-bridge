@@ -29,72 +29,79 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. 로그인하지 않은 사용자 처리
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname !== "/"
-  ) {
+  const path = request.nextUrl.pathname;
+
+  // Legacy route redirect: creator dashboard was renamed to the public campaigns explore page
+  if (path === "/creator/dashboard") {
+    return NextResponse.redirect(new URL("/campaigns", request.url));
+  }
+
+  // 1. 공용 경로 정의 (로그인 없이 접근 가능)
+  // - / : 랜딩 페이지
+  // - /auth/* : 로그인, 회원가입 등 인증 관련
+  // - /campaigns : 공용 캠페인 탐색
+  // - /cl/* : 트래킹 링크
+  // - /api/* : API 라우트 (필요 시 내부에서 별도 검증)
+  const isPublicPath =
+    path === "/" ||
+    path.startsWith("/auth") ||
+    path.startsWith("/campaigns") ||
+    path.startsWith("/cl") ||
+    path.startsWith("/api") ||
+    path.match(/\.(ico|svg|png|jpg|jpeg)$/); // 정적 파일
+
+  // 2. 비로그인 사용자 접근 제어
+  if (!user && !isPublicPath) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
+    url.searchParams.set("next", path); // 로그인 후 돌아올 경로 저장
     return NextResponse.redirect(url);
   }
 
-  // 2. 로그인한 사용자의 프로필 완료 여부 확인
-  // (단, /auth/select-role은 제외 - 무한 리다이렉트 방지)
-  if (
-    user &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname !== "/"
-  ) {
-    // 프로필 확인
-    const { data: profile, error: profileError } = await supabase
+  // 3. 로그인 사용자 처리
+  if (user) {
+    const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    // 프로필 조회 실패 또는 역할이 없으면 select-role로 리다이렉트
-    if (profileError || !profile || !profile.role) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/auth/select-role";
-      return NextResponse.redirect(url);
+    // 3-1. 역할(Role) 미설정 사용자 -> 역할 선택 페이지로 강제 이동
+    // (단, 로그아웃 등 auth 관련 로직은 제외)
+    if (
+      !profile?.role &&
+      !path.startsWith("/auth")
+    ) {
+      return NextResponse.redirect(new URL("/auth/select-role", request.url));
     }
 
-    // 역할은 있지만 상세 정보가 없는지 확인
-    if (profile.role === "creator") {
-      const { data: creator, error: creatorError } = await supabase
-        .from("creator_details")
-        .select("id")
-        .eq("id", user.id)
-        .single();
+    // 3-2. 역할이 이미 설정된 사용자가 역할 선택 페이지 접근 시 -> 홈으로
+    if (profile?.role && path.startsWith("/auth/select-role")) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
 
-      // 크리에이터 상세정보 조회 실패 또는 없으면 select-role로
-      if (creatorError || !creator) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/auth/select-role";
-        return NextResponse.redirect(url);
+    // 3-3. 역할별 경로 접근 제어 (RBAC)
+    if (profile?.role === "creator") {
+      // 크리에이터가 광고주 페이지 접근 시 차단
+      if (path.startsWith("/advertiser")) {
+        return NextResponse.redirect(new URL("/", request.url));
       }
-    } else if (profile.role === "advertiser") {
-      const { data: advertiser, error: advertiserError } = await supabase
-        .from("advertiser_details")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-
-      // 광고주 상세정보 조회 실패 또는 없으면 select-role로
-      if (advertiserError || !advertiser) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/auth/select-role";
-        return NextResponse.redirect(url);
+      // 루트 경로 리다이렉트
+      if (path === "/dashboard" || path === "/creator") {
+        return NextResponse.redirect(new URL("/creator/my-campaigns", request.url));
+      }
+    } else if (profile?.role === "advertiser") {
+      // 광고주가 크리에이터 전용 페이지 접근 시 차단
+      if (path.startsWith("/creator")) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      // 루트 경로 리다이렉트
+      if (path === "/dashboard" || path === "/advertiser") {
+        return NextResponse.redirect(new URL("/advertiser/dashboard", request.url));
       }
     }
   }

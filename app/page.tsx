@@ -17,25 +17,25 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-
+      {/* Header removed (moved to layout) */}
+      
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section>
+        <div className="mx-auto max-w-7xl px-4 py-24 md:px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left: Content */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--neutral-100)] text-[var(--neutral-700)] text-sm font-medium">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-700 text-sm font-medium">
                 성과형 커머스 플랫폼
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight">
                 당신의 영향력을
                 <br />
-                <span className="text-[var(--primary)]">수익으로</span>
+                <span className="text-primary">수익으로</span>
               </h1>
 
-              <p className="text-lg text-[var(--neutral-600)] leading-relaxed max-w-xl">
+              <p className="text-lg text-neutral-600 leading-relaxed max-w-xl">
                 광고주와 크리에이터를 성과형 커머스로 연결합니다. 나만의
                 마이샵을 만들고, 좋아하는 제품을 판매하며, 투명한 수수료를
                 받으세요.
@@ -64,9 +64,9 @@ export default function Home() {
                   (item) => (
                     <div
                       key={item}
-                      className="flex items-center gap-2 text-sm text-[var(--neutral-600)]"
+                      className="flex items-center gap-2 text-sm text-neutral-600"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-[var(--primary)]" />
+                      <CheckCircle2 className="w-4 h-4 text-primary" />
                       <span>{item}</span>
                     </div>
                   ),
@@ -76,15 +76,15 @@ export default function Home() {
 
             {/* Right: Visual */}
             <div className="relative">
-              <div className="relative bg-white rounded-2xl shadow-lg border border-[var(--border)] p-6">
+              <div className="relative bg-white rounded-2xl shadow-lg border border-border p-6">
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-bold text-lg">
+                    <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg">
                       제
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">@제이미_shop</h3>
-                      <p className="text-sm text-[var(--neutral-600)]">
+                      <p className="text-sm text-neutral-600">
                         패션 & 라이프스타일
                       </p>
                     </div>
@@ -94,23 +94,23 @@ export default function Home() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="aspect-square rounded-xl bg-[var(--neutral-100)]"
+                        className="aspect-square rounded-xl bg-neutral-100"
                       />
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--neutral-50)]">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-50">
                     <div>
-                      <p className="text-sm text-[var(--neutral-600)]">
+                      <p className="text-sm text-neutral-600">
                         이번 달
                       </p>
                       <p className="text-2xl font-bold">₩3,420,000</p>
                     </div>
-                    <TrendingUp className="w-8 h-8 text-[var(--primary)]" />
+                    <TrendingUp className="w-8 h-8 text-primary" />
                   </div>
                 </div>
 
-                <div className="absolute -top-3 -right-3 bg-[var(--primary)] text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
+                <div className="absolute -top-3 -right-3 bg-primary text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
                   마이샵
                 </div>
               </div>
@@ -122,14 +122,14 @@ export default function Home() {
       {/* Features Section */}
       <section
         id="features"
-        className="py-20 px-6 lg:px-8 bg-[var(--neutral-50)]"
+        className="py-20 px-6 lg:px-8 bg-neutral-50"
       >
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
               왜 Ad-Bridge인가요?
             </h2>
-            <p className="text-lg text-[var(--neutral-600)] max-w-2xl mx-auto">
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
               성과형 크리에이터 커머스를 위해 특별히 설계된 플랫폼
             </p>
           </div>
@@ -160,13 +160,13 @@ export default function Home() {
             ].map((feature, i) => (
               <div
                 key={i}
-                className="p-6 rounded-xl bg-white border border-[var(--border)] hover:border-[var(--primary)] hover:shadow-md transition-all"
+                className="p-6 rounded-xl bg-white border border-border hover:border-primary hover:shadow-md transition-all"
               >
-                <div className="w-12 h-12 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-[var(--primary)]" />
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                <p className="text-sm text-[var(--neutral-600)] leading-relaxed">
+                <p className="text-sm text-neutral-600 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -184,7 +184,7 @@ export default function Home() {
 
           {/* For Creators */}
           <div className="mb-20">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] font-semibold mb-8 text-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary font-semibold mb-8 text-sm">
               <Heart className="w-4 h-4" />
               크리에이터
             </div>
@@ -211,16 +211,16 @@ export default function Home() {
                 },
               ].map((item, i) => (
                 <div key={i} className="relative">
-                  <div className="text-5xl font-bold text-[var(--primary)]/10 mb-4">
+                  <div className="text-5xl font-bold text-primary/10 mb-4">
                     {item.step}
                   </div>
                   <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                  <p className="text-[var(--neutral-600)] leading-relaxed">
+                  <p className="text-neutral-600 leading-relaxed">
                     {item.description}
                   </p>
                   {i < 2 && (
                     <div className="hidden md:block absolute top-8 -right-4">
-                      <ArrowRight className="w-6 h-6 text-[var(--neutral-300)]" />
+                      <ArrowRight className="w-6 h-6 text-neutral-300" />
                     </div>
                   )}
                 </div>
@@ -230,7 +230,7 @@ export default function Home() {
 
           {/* For Brands */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] font-semibold mb-8 text-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary font-semibold mb-8 text-sm">
               <BarChart3 className="w-4 h-4" />
               광고주
             </div>
@@ -257,16 +257,16 @@ export default function Home() {
                 },
               ].map((item, i) => (
                 <div key={i} className="relative">
-                  <div className="text-5xl font-bold text-[var(--primary)]/10 mb-4">
+                  <div className="text-5xl font-bold text-primary/10 mb-4">
                     {item.step}
                   </div>
                   <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                  <p className="text-[var(--neutral-600)] leading-relaxed">
+                  <p className="text-neutral-600 leading-relaxed">
                     {item.description}
                   </p>
                   {i < 2 && (
                     <div className="hidden md:block absolute top-8 -right-4">
-                      <ArrowRight className="w-6 h-6 text-[var(--neutral-300)]" />
+                      <ArrowRight className="w-6 h-6 text-neutral-300" />
                     </div>
                   )}
                 </div>
@@ -279,17 +279,17 @@ export default function Home() {
       {/* Target Users */}
       <section
         id="creators"
-        className="py-20 px-6 lg:px-8 bg-[var(--neutral-50)]"
+        className="py-20 px-6 lg:px-8 bg-neutral-50"
       >
         <div className="mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Creators */}
-            <div className="p-8 rounded-2xl bg-white border border-[var(--border)]">
-              <div className="w-12 h-12 rounded-lg bg-[var(--primary)] flex items-center justify-center mb-6">
+            <div className="p-8 rounded-2xl bg-white border border-border">
+              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-6">
                 <Heart className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-3">크리에이터를 위한</h3>
-              <p className="text-[var(--neutral-600)] mb-6">
+              <p className="text-neutral-600 mb-6">
                 팔로워 1만~10만? 진정으로 믿는 제품으로 영향력을 지속 가능한
                 수익으로 전환하세요.
               </p>
@@ -301,8 +301,8 @@ export default function Home() {
                   "글로벌 제품 접근",
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm">
-                    <CheckCircle2 className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
-                    <span className="text-[var(--neutral-700)]">{item}</span>
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-neutral-700">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -316,7 +316,7 @@ export default function Home() {
             {/* Brands */}
             <div
               id="brands"
-              className="p-8 rounded-2xl bg-[var(--primary)] text-white"
+              className="p-8 rounded-2xl bg-primary text-white"
             >
               <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mb-6">
                 <BarChart3 className="w-6 h-6 text-white" />
@@ -334,7 +334,7 @@ export default function Home() {
                   "노출 부스트",
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm">
-                    <CheckCircle2 className="w-5 h-5 text-white flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-white shrink-0" />
                     <span className="text-white/90">{item}</span>
                   </li>
                 ))}
@@ -343,7 +343,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="w-full sm:w-auto bg-white text-[var(--primary)] hover:bg-white/90"
+                  className="w-full sm:w-auto bg-white text-primary hover:bg-white/90"
                 >
                   캠페인 시작
                 </Button>
@@ -354,71 +354,81 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 lg:px-8 bg-[var(--primary)] text-white">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl lg:text-5xl font-bold mb-6">
+      <section className="py-24 px-6 lg:px-8 bg-primary text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.1)_25%,rgba(255,255,255,0.1)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.1)_75%,rgba(255,255,255,0.1)_100%)] bg-size-[64px_64px] opacity-10"></div>
+        <div className="mx-auto max-w-4xl text-center relative z-10">
+          <h2 className="text-3xl lg:text-5xl font-bold mb-6 tracking-tight">
             다리를 놓을 준비가 되셨나요?
           </h2>
-          <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto">
-            Ad-Bridge에서 지속 가능한 커머스 파트너십을 구축하는 수천 명의
-            크리에이터와 브랜드에 합류하세요.
+          <p className="text-lg text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Ad-Bridge에서 지속 가능한 커머스 파트너십을 구축하는<br className="hidden sm:block" /> 
+            수천 명의 크리에이터와 브랜드에 합류하세요.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/login">
               <Button
                 size="lg"
                 variant="secondary"
-                className="w-full sm:w-auto bg-white text-[var(--primary)] hover:bg-white/90"
+                className="w-full sm:w-auto h-14 px-8 text-lg font-semibold bg-white text-primary hover:bg-white/90 shadow-xl border-0"
               >
                 무료로 시작하기
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto bg-transparent border-2 border-white text-white hover:bg-white/10"
-            >
-              데모 예약
-            </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 lg:px-8 bg-[var(--neutral-900)] text-white">
+      <footer className="bg-neutral-900 text-white pt-20 pb-10 px-6 lg:px-8 border-t border-neutral-800">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 font-bold text-lg">
-              <div className="w-7 h-7 rounded-lg bg-[var(--primary)] flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 font-bold text-xl text-white">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">A</span>
+                </div>
+                <span>Ad-Bridge</span>
               </div>
-              <span>Ad-Bridge</span>
+              <p className="text-neutral-400 text-sm leading-relaxed max-w-xs">
+                크리에이터와 브랜드를 위한 투명하고 공정한<br/>성과형 커머스 플랫폼.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-white mb-4">서비스</h4>
+              <ul className="space-y-3 text-sm text-neutral-400">
+                <li><Link href="#" className="hover:text-primary transition-colors">캠페인 탐색</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">광고주 찾기</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">성공 사례</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">요금제</Link></li>
+              </ul>
             </div>
 
-            <p className="text-sm text-white/60">
-              © 2025 Ad-Bridge. All rights reserved.
-            </p>
+            <div>
+              <h4 className="font-semibold text-white mb-4">회사</h4>
+              <ul className="space-y-3 text-sm text-neutral-400">
+                <li><Link href="#" className="hover:text-primary transition-colors">회사 소개</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">채용 정보</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">블로그</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">문의하기</Link></li>
+              </ul>
+            </div>
 
-            <div className="flex gap-6 text-sm">
-              <a
-                href="#"
-                className="text-white/60 hover:text-white transition-colors"
-              >
-                개인정보처리방침
-              </a>
-              <a
-                href="#"
-                className="text-white/60 hover:text-white transition-colors"
-              >
-                이용약관
-              </a>
-              <a
-                href="#"
-                className="text-white/60 hover:text-white transition-colors"
-              >
-                문의하기
-              </a>
+            <div>
+              <h4 className="font-semibold text-white mb-4">법적 고지</h4>
+              <ul className="space-y-3 text-sm text-neutral-400">
+                <li><Link href="#" className="hover:text-primary transition-colors">이용약관</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">개인정보처리방침</Link></li>
+                <li><Link href="#" className="hover:text-primary transition-colors">사업자 정보 확인</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
+            <p>© 2025 Ad-Bridge. All rights reserved.</p>
+            <div className="flex gap-4">
+               {/* SNS Icons placehoder if needed */}
             </div>
           </div>
         </div>

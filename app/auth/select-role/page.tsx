@@ -104,7 +104,7 @@ export default function SelectRolePage() {
             }
           );
         if (detailsError) throw detailsError;
-        router.push("/creator/dashboard");
+        router.push("/campaigns");
       } else if (role === "advertiser") {
         const { error: detailsError } = await supabase
           .from("advertiser_details")
@@ -201,21 +201,21 @@ export default function SelectRolePage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {role === "creator" ? (
             <div className="space-y-4">
-              <div>
+            <div>
                 <label className="block text-sm font-medium mb-1">
                   핸들 (ID) <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
+              </label>
+              <div className="relative">
                   <span className="absolute left-4 top-3 text-gray-500">@</span>
-                  <input
-                    type="text"
-                    required
-                    value={formData.handle}
-                    onChange={(e) =>
-                      setFormData({ ...formData, handle: e.target.value })
-                    }
+                <input
+                  type="text"
+                  required
+                  value={formData.handle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, handle: e.target.value })
+                  }
                     className="w-full pl-8 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-[var(--primary)] focus:outline-none"
-                    placeholder="username"
+                  placeholder="username"
                   />
                 </div>
               </div>

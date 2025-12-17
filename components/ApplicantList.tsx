@@ -48,7 +48,7 @@ export function ApplicantList({
 
   if (applications.length === 0) {
     return (
-      <div className="text-center py-10 text-[var(--neutral-600)]">
+      <div className="text-center py-10 text-neutral-600">
         대기 중인 지원자가 없습니다.
       </div>
     );
@@ -59,20 +59,20 @@ export function ApplicantList({
       {applications.map((app) => (
         <div
           key={app.id}
-          className="flex items-center justify-between p-4 rounded-lg border border-[var(--border)] bg-white hover:border-[var(--primary)] transition-all"
+          className="flex items-center justify-between p-4 rounded-lg border border-border bg-white hover:border-primary transition-all shadow-sm"
         >
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">{app.profiles?.email}</span>
-              <span className="text-sm text-[var(--neutral-600)]">님이</span>
+              <span className="font-semibold text-neutral-900">{app.profiles?.email}</span>
+              <span className="text-sm text-neutral-600">님이</span>
             </div>
-            <p className="text-sm mt-1">
-              <span className="font-medium text-[var(--primary)]">
+            <p className="text-sm mt-1 text-neutral-700">
+              <span className="font-medium text-primary">
                 {app.campaigns?.products?.name}
               </span>{" "}
               캠페인에 지원했습니다.
             </p>
-            <p className="text-xs text-[var(--neutral-400)] mt-1">
+            <p className="text-xs text-neutral-400 mt-1">
               {new Date(app.created_at).toLocaleDateString()}
             </p>
           </div>
@@ -88,7 +88,7 @@ export function ApplicantList({
             </Button>
             <Button
               size="sm"
-              className="bg-[var(--primary)] hover:bg-[var(--primary-dark)]"
+              className="bg-primary hover:bg-primary-dark text-white"
               onClick={() => handleStatusUpdate(app.id, "approved")}
             >
               <Check className="w-4 h-4 mr-1" />

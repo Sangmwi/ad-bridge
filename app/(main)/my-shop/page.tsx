@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { ExternalLink } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
+import { formatWon } from "@/lib/format";
 
 type ShopItem = {
   id: string;
@@ -109,7 +111,7 @@ export default function MyShopPage() {
                     {item.campaigns.products.description}
                   </p>
                   <p className="font-bold text-xl text-[var(--primary)]">
-                    ₩{item.campaigns.products.price.toLocaleString()}
+                    {formatWon(item.campaigns.products.price)}
                   </p>
                 </div>
               </div>
@@ -118,17 +120,17 @@ export default function MyShopPage() {
         )}
 
         {!loading && items.length === 0 && (
-          <div className="text-center py-20 border-2 border-dashed border-[var(--border)] rounded-xl">
-            <p className="text-[var(--neutral-600)] mb-4">
-              아직 담은 상품이 없습니다.
-            </p>
+          <EmptyState
+            title="아직 담은 상품이 없습니다."
+            action={
             <Link
-              href="/creator/dashboard"
+                href="/campaigns"
               className="text-[var(--primary)] font-semibold hover:underline"
             >
               캠페인 탐색하러 가기 &rarr;
             </Link>
-          </div>
+            }
+          />
         )}
       </div>
     </div>
