@@ -7,6 +7,7 @@ import Link from "next/link";
 import { formatWon } from "@/lib/format";
 import { CopyField } from "@/components/patterns/CopyField";
 import { StatusBadge } from "@/components/primitives/StatusBadge";
+import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
 
 type MyCampaignProps = {
   applicationId: string;
@@ -64,8 +65,8 @@ export function MyCampaignCard({ campaign, creatorId, clicks }: MyCampaignProps)
             승인됨
           </StatusBadge>
         </div>
-        <div className="absolute top-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg font-semibold backdrop-blur-sm shadow-sm">
-          {campaign.reward_type === "cps" ? "판매당" : "클릭당"} {formatWon(campaign.reward_amount)}
+        <div className="absolute top-3 right-3">
+          <RewardTypeBadge rewardType={campaign.reward_type} amount={campaign.reward_amount} />
         </div>
       </div>
 

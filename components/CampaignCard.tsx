@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { LockedValue } from "@/components/patterns/LockedValue";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
+import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
 
 export type Product = {
   name: string;
@@ -86,14 +87,8 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
             No Image
           </div>
         )}
-        <div className="flex items-center gap-2 absolute top-3 right-3 rounded-lg border border-white/10 bg-primary px-3 py-1.5 text-xs font-semibold text-white">
-          {campaign.reward_type === "cps" ? "판매당" : "클릭당"}{" "}
-          <LockedValue
-            locked={campaign.reward_amount === null}
-            value={campaign.reward_amount !== null ? formatWon(campaign.reward_amount) : ""}
-            preview="????원"
-            className="ml-1"
-          />
+        <div className="absolute top-3 right-3">
+          <RewardTypeBadge rewardType={campaign.reward_type} amount={campaign.reward_amount} />
         </div>
       </div>
 

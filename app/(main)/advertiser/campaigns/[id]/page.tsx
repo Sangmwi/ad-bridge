@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CampaignPerformancePanel } from "@/components/features/advertiser/campaigns/CampaignPerformancePanel";
+import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
 
 export default async function CampaignDetailPage({
   params,
@@ -145,13 +146,11 @@ export default async function CampaignDetailPage({
               {/* Row 3: meta */}
               <div className="mt-4 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-600">
-                    보상
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {campaign.reward_type === "cps" ? "판매당" : "클릭당"}{" "}
-                    {formatWon(campaign.reward_amount)}
-                  </span>
+                  <RewardTypeBadge
+                    rewardType={campaign.reward_type}
+                    amount={campaign.reward_amount}
+                    size="md"
+                  />
                 </div>
 
                 <div className="flex items-center gap-2">
