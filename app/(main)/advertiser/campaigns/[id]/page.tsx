@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CampaignPerformancePanel } from "@/components/features/advertiser/campaigns/CampaignPerformancePanel";
 import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
-import { CategoryBadge } from "@/components/primitives/CategoryBadge";
+import { CategoryTextServer } from "@/components/primitives/CategoryTextServer";
 
 export default async function CampaignDetailPage({
   params,
@@ -64,13 +64,13 @@ export default async function CampaignDetailPage({
     : campaign.products;
 
   // Category extraction with type safety
-  let categoryName: string | null = null;
+  let category: { id: string; name: string; parent_id: string | null } | null = null;
   if (product && 'product_categories' in product) {
-    const category = (product as any).product_categories;
-    if (Array.isArray(category) && category.length > 0) {
-      categoryName = category[0]?.name || null;
-    } else if (category && typeof category === 'object' && 'name' in category) {
-      categoryName = category.name || null;
+    const cat = (product as any).product_categories;
+    if (Array.isArray(cat) && cat.length > 0) {
+      category = cat[0] || null;
+    } else if (cat && typeof cat === 'object' && 'id' in cat) {
+      category = cat;
     }
   }
 
@@ -111,12 +111,10 @@ export default async function CampaignDetailPage({
               {/* Row 1: title + actions */}
               <div className="flex items-start gap-2 w-full">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-start gap-3 mb-2">
-                    <h1 className="min-w-0 text-2xl sm:text-3xl font-bold wrap-break-word flex-1">
-                      {product?.name}
-                    </h1>
-                    {categoryName && <CategoryBadge name={categoryName} size="md" />}
-                  </div>
+                  <CategoryTextServer category={category} className="mb-2" />
+                  <h1 className="min-w-0 text-2xl sm:text-3xl font-bold wrap-break-word mb-2">
+                    {product?.name}
+                  </h1>
                 </div>
 
                 <div className="flex gap-2 flex-nowrap shrink-0">

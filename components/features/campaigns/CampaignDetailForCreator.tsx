@@ -5,34 +5,12 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
-import { CategoryBadge } from "@/components/primitives/CategoryBadge";
+import { CategoryText } from "@/components/primitives/CategoryText";
 import { LockedValue } from "@/components/patterns/LockedValue";
+import type { Campaign, Product } from "@/lib/types/campaign";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-type Product = {
-  name: string;
-  price: number | null;
-  image_url: string | null;
-  description: string;
-  category_id?: string | null;
-  product_categories?: {
-    id: string;
-    name: string;
-    parent_id: string | null;
-  } | null;
-};
-
-type Campaign = {
-  id: string;
-  status: string;
-  reward_type: string;
-  reward_amount: number | null;
-  created_at: string;
-  conditions: { min_followers: number };
-  products: Product | Product[] | null;
-};
 
 export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
   const router = useRouter();
@@ -45,7 +23,7 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
 
   if (!product) return null;
 
-  const category = product.product_categories;
+  const category = product.product_categories ?? null;
   const categoryName = category?.name || null;
 
   const handleApply = async () => {
@@ -85,8 +63,8 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container py-8">
+    <div className="min-h-screen bg-background w-full">
+      <main>
         {/* Navigation */}
         <div className="mb-6">
           <Link
@@ -118,10 +96,8 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
 
             {/* Content */}
             <div className="flex-1 min-w-0 flex flex-col">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <h1 className="text-2xl md:text-3xl font-bold flex-1">{product.name}</h1>
-                {categoryName && <CategoryBadge name={categoryName} size="md" />}
-              </div>
+              <CategoryText category={category} className="mb-2" />
+              <h1 className="text-2xl md:text-3xl font-bold mb-3">{product.name}</h1>
 
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 text-sm">
@@ -149,10 +125,12 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
               </div>
 
               {/* Created At */}
-              <p className="text-xs text-neutral-500 mb-6">
-                {formatTimeAgo(campaign.created_at)} ·{" "}
-                {new Date(campaign.created_at).toLocaleDateString()}
-              </p>
+              {campaign.created_at && (
+                <p className="text-xs text-neutral-500 mb-6">
+                  {formatTimeAgo(campaign.created_at)} ·{" "}
+                  {new Date(campaign.created_at).toLocaleDateString()}
+                </p>
+              )}
 
               {/* Conditions */}
               {campaign.conditions?.min_followers != null && campaign.conditions.min_followers > 0 && (

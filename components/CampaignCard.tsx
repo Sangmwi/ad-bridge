@@ -6,30 +6,9 @@ import { LockedValue } from "@/components/patterns/LockedValue";
 import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
 import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
-import { CategoryBadge } from "@/components/primitives/CategoryBadge";
+import { CategoryText } from "@/components/primitives/CategoryText";
+import type { Campaign, Product } from "@/lib/types/campaign";
 import Link from "next/link";
-
-export type Product = {
-  name: string;
-  price: number | null;
-  image_url: string | null;
-  description: string;
-  category_id?: string | null;
-  product_categories?: {
-    id: string;
-    name: string;
-    parent_id: string | null;
-  } | null;
-};
-
-export type Campaign = {
-  id: string;
-  created_at?: string;
-  reward_type: string;
-  reward_amount: number | null;
-  conditions: { min_followers: number };
-  products: Product | Product[] | null;
-};
 
 export interface CampaignCardProps {
   campaign: Campaign;
@@ -45,9 +24,7 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
 
   if (!product) return null;
 
-  // 카테고리 정보 추출
-  const category = product.product_categories;
-  const categoryName = category?.name || null;
+  const category = product.product_categories ?? null;
 
   return (
     <div className="bg-white rounded-xl border border-border overflow-hidden hover:border-primary hover:shadow-md transition-all">
@@ -69,12 +46,8 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
       </div>
 
       <div className="p-6">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-bold text-lg flex-1">{product.name}</h3>
-          {categoryName && (
-            <CategoryBadge name={categoryName} size="sm" />
-          )}
-        </div>
+        <CategoryText category={category} className="mb-1.5" />
+        <h3 className="font-bold text-lg mb-2">{product.name}</h3>
         <p className="text-xs text-neutral-600 mb-3 line-clamp-2 leading-relaxed">
           {product.description}
         </p>

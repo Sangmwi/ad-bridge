@@ -44,7 +44,7 @@ export const queryKeys = {
 
   // Categories
   categories: {
-    all: ["categories"] as const,
+    all: () => ["categories", "all"] as const,
     list: () => ["categories", "list"] as const,
   },
 
