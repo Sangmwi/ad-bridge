@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -10,16 +10,36 @@ import { useRouter } from "next/navigation";
 export default function NewCampaignPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<
+    { id: string; parent_id: string | null; depth: number; name: string }[]
+  >([]);
   const [formData, setFormData] = useState({
     productName: "",
     price: "",
     description: "",
     imageUrl: "",
     targetUrl: "", // 판매 페이지 URL
+    categoryParentId: "",
+    categoryChildId: "",
     rewardType: "cps",
     rewardAmount: "",
     minFollowers: "0",
   });
+
+  // load categories (public read)
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("product_categories")
+      .select("id,parent_id,depth,name")
+      .order("depth", { ascending: true })
+      .then(({ data }) => setCategories((data as any[]) || []));
+  }, []);
+
+  const parents = categories.filter((c) => c.depth === 1);
+  const children = categories.filter(
+    (c) => c.depth === 2 && c.parent_id === formData.categoryParentId
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +62,7 @@ export default function NewCampaignPage() {
           description: formData.description,
           image_url: formData.imageUrl,
           target_url: formData.targetUrl, // DB 저장
+          category_id: formData.categoryChildId || null,
         })
         .select()
         .single();
@@ -145,6 +166,54 @@ export default function NewCampaignPage() {
                     setFormData({ ...formData, targetUrl: e.target.value })
                   }
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    카테고리(대)
+                  </label>
+                  <select
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-[var(--primary)]"
+                    value={formData.categoryParentId}
+                    onChange={(e) => {
+                      const parentId = e.target.value;
+                      setFormData({
+                        ...formData,
+                        categoryParentId: parentId,
+                        categoryChildId: "",
+                      });
+                    }}
+                  >
+                    <option value="">선택</option>
+                    {parents.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    카테고리(소)
+                  </label>
+                  <select
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-[var(--primary)] disabled:bg-gray-50"
+                    value={formData.categoryChildId}
+                    disabled={!formData.categoryParentId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, categoryChildId: e.target.value })
+                    }
+                  >
+                    <option value="">선택</option>
+                    {children.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>

@@ -49,7 +49,7 @@ export function Header({ user, role }: HeaderProps) {
             href="/"
             className="flex items-center gap-2 font-bold text-xl text-foreground"
           >
-            <LogoRow width={160} height={40} />
+            <LogoRow width={140} height={35} />
           </Link>
 
           {/* Desktop Navigation */}

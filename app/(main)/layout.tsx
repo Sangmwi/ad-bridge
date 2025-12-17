@@ -4,7 +4,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-24">
+    <div className="flex flex-col justify-center items-center max-w-7xl mx-auto px-6 py-24">
       {children}
     </div>
   );
