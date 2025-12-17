@@ -1,71 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/client";
 import { ExternalLink } from "lucide-react";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { formatWon } from "@/lib/format";
-
-type ShopItem = {
-  id: string;
-  custom_link: string;
-  campaigns: {
-    reward_type: string;
-    reward_amount: number;
-    products: {
-      name: string;
-      price: number;
-      image_url: string | null;
-      description: string;
-    };
-  };
-};
+import { useMyShop } from "@/lib/queries/shop";
+import { useUser } from "@/lib/queries/auth";
 
 export default function MyShopPage() {
-  const [items, setItems] = useState<ShopItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
-
-  useEffect(() => {
-    fetchMyShopItems();
-  }, []);
-
-  const fetchMyShopItems = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("my_shop_items")
-      .select(
-        `
-        id,
-        custom_link,
-        campaigns (
-          reward_type,
-          reward_amount,
-          products (
-            name,
-            price,
-            image_url,
-            description
-          )
-        )
-      `,
-      )
-      .eq("creator_id", user.id);
-
-    if (error) {
-      console.error(error);
-    } else {
-      // @ts-ignore
-      setItems(data || []);
-    }
-    setLoading(false);
-  };
-
   return (
     <div className="min-h-screen bg-white">
       {/* My Shop Header */}
@@ -77,13 +19,28 @@ export default function MyShopPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-12">
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block w-8 h-8 border-4 border-[var(--neutral-200)] border-t-[var(--primary)] rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-8">
-            {items.map((item) => (
+        <MyShopContent />
+      </div>
+    </div>
+  );
+}
+
+function MyShopContent() {
+  const { data: user } = useUser();
+  const { data: items, isLoading } = useMyShop(user?.id || "");
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-20">
+        <div className="inline-block w-8 h-8 border-4 border-[var(--neutral-200)] border-t-[var(--primary)] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid md:grid-cols-2 gap-8">
+        {items?.map((item) => (
               <div key={item.id} className="group cursor-pointer">
                 <div className="aspect-square bg-[var(--neutral-100)] mb-4 rounded-xl overflow-hidden relative border border-[var(--border)]">
                   {item.campaigns.products.image_url ? (
@@ -116,23 +73,21 @@ export default function MyShopPage() {
                 </div>
               </div>
             ))}
-          </div>
-        )}
+      </div>
 
-        {!loading && items.length === 0 && (
-          <EmptyState
-            title="아직 담은 상품이 없습니다."
-            action={
+      {!isLoading && (!items || items.length === 0) && (
+        <EmptyState
+          title="아직 담은 상품이 없습니다."
+          action={
             <Link
-                href="/campaigns"
+              href="/campaigns"
               className="text-[var(--primary)] font-semibold hover:underline"
             >
               캠페인 탐색하러 가기 &rarr;
             </Link>
-            }
-          />
-        )}
-      </div>
-    </div>
+          }
+        />
+      )}
+    </>
   );
 }

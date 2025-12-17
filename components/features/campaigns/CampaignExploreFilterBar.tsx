@@ -4,7 +4,10 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { CategoryTreeNode } from "@/lib/productCategories";
-import { Search, X } from "lucide-react";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterSelect } from "@/components/ui/filter-select";
+import { SearchButton } from "@/components/ui/search-button";
+import { ClearButton } from "@/components/ui/clear-button";
 
 function setParam(params: URLSearchParams, key: string, value?: string) {
   if (!value) params.delete(key);
@@ -82,88 +85,40 @@ export function CampaignExploreFilterBar({
           applyAll(q, c1, c2);
         }}
       >
-        {/* search */}
-        <div className="relative flex-1">
-          <Search
-            strokeWidth={2.5}
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-900"
-          />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="제목으로 검색…"
-            className="w-full rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-md pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black/5"
-          />
-        </div>
+        <SearchInput
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="제목으로 검색…"
+        />
 
-        {/* categories */}
         <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-          <select
+          <FilterSelect
             value={c1}
-            onChange={(e) => {
-              const nextC1 = e.target.value;
+            onChange={(nextC1) => {
               setC1(nextC1);
               setC2("");
             }}
-            className="h-10 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-md px-3 text-sm outline-none focus:ring-2 focus:ring-black/5"
-          >
-            <option value="">전체(대)</option>
-            {categories.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+            options={categories.map((p) => ({ value: p.id, label: p.name }))}
+            placeholder="전체(대)"
+          />
 
-          <select
+          <FilterSelect
             value={c2}
             disabled={!c1}
-            onChange={(e) => {
-              const nextC2 = e.target.value;
+            onChange={(nextC2) => {
               setC2(nextC2);
             }}
-            className="h-10 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-md px-3 text-sm outline-none focus:ring-2 focus:ring-black/5 disabled:opacity-60"
-          >
-            <option value="">전체(소)</option>
-            {childOptions.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            options={childOptions.map((c) => ({ value: c.id, label: c.name }))}
+            placeholder="전체(소)"
+          />
         </div>
 
-        <button
+        <SearchButton
           type="submit"
-          disabled={isSubmitting || isPending}
-          className={cn(
-            "relative inline-flex h-10 min-w-[96px] items-center justify-center rounded-xl px-4 text-sm font-semibold text-white disabled:opacity-70 disabled:backdrop-blur-sm",
-            isSubmitting || isPending
-              ? "bg-black"
-              : "bg-neutral-900 hover:bg-neutral-800"
-          )}
-        >
-          {/* keep layout stable: label is always "검색" */}
-          <span className={cn("inline-flex items-center gap-2", (isSubmitting || isPending) && "opacity-40")}>
-            <Search className="h-4 w-4" aria-hidden="true" />
-            검색
-          </span>
-          {isSubmitting || isPending ? (
-            <span
-              className="absolute inset-0 m-auto h-5 w-5 animate-spin rounded-full border-2 border-white/60 border-t-white"
-              aria-hidden="true"
-            />
-          ) : null}
-        </button>
+          isLoading={isSubmitting || isPending}
+        />
 
-        <button
-          type="button"
-          onClick={clearAll}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-md px-3 text-sm text-neutral-700 hover:bg-white/90"
-        >
-          <X className="h-4 w-4" />
-          초기화
-        </button>
+        <ClearButton onClick={clearAll} />
       </form>
 
       {/* no inline pending text; pending state is shown on the search button */}

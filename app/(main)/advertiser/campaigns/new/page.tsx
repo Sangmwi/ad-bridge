@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { useCategories } from "@/lib/queries/campaigns";
 
 export default function NewCampaignPage() {
   const router = useRouter();
@@ -27,14 +28,13 @@ export default function NewCampaignPage() {
   });
 
   // load categories (public read)
+  const { data: categoryRows } = useCategories();
+  
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("product_categories")
-      .select("id,parent_id,depth,name")
-      .order("depth", { ascending: true })
-      .then(({ data }) => setCategories((data as any[]) || []));
-  }, []);
+    if (categoryRows) {
+      setCategories(categoryRows as any[]);
+    }
+  }, [categoryRows]);
 
   const parents = categories.filter((c) => c.depth === 1);
   const children = categories.filter(

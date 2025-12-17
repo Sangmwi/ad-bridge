@@ -5,6 +5,7 @@ import { CreatorManagementTable } from "@/components/CreatorManagementTable";
 import { formatWon } from "@/lib/format";
 import { DollarSign, MousePointer2, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queries/keys";
 
 type StatsResponse = {
   totalClicks: number;
@@ -48,13 +49,13 @@ export function CampaignPerformancePanel({
   rewardType: "cpc" | "cps" | string;
 }) {
   const statsQuery = useQuery({
-    queryKey: ["campaign", campaignId, "stats"],
+    queryKey: queryKeys.campaigns.stats(campaignId),
     queryFn: () =>
       fetchJson<StatsResponse>(`/api/advertiser/campaigns/${campaignId}/stats`),
   });
 
   const creatorsQuery = useQuery({
-    queryKey: ["campaign", campaignId, "creators"],
+    queryKey: queryKeys.campaigns.creators(campaignId),
     queryFn: () =>
       fetchJson<CreatorsResponse>(
         `/api/advertiser/campaigns/${campaignId}/creators`
