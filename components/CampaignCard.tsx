@@ -116,11 +116,17 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
             </span>
           </div>
           
-          {userRole !== "advertiser" && (
-            <Button onClick={handleApply} size="sm">
-              {isLoggedIn ? "신청하기" : "로그인하고 신청"}
+          {!isLoggedIn && (
+            <Button onClick={() => window.location.href = "/auth/login"} size="sm">
+              시작하기
             </Button>
           )}
+          {isLoggedIn && userRole === "creator" && (
+            <Button onClick={handleApply} size="sm">
+              신청하기
+            </Button>
+          )}
+          {/* 광고주는 자신의 캠페인에 신청할 수 없으므로 버튼 표시하지 않음 */}
         </div>
       </div>
     </div>
