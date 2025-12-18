@@ -6,7 +6,8 @@ import { Copy, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "@/components/primitives/StatusBadge";
 import { ImageWithFallback } from "@/components/primitives/ImageWithFallback";
-import { formatWon } from "@/lib/format";
+import { CampaignPriceInfo } from "@/components/primitives/CampaignPriceInfo";
+import { CampaignRewardInfo } from "@/components/primitives/CampaignRewardInfo";
 import { Button } from "@/components/ui/button";
 
 type MyCampaignListItemProps = {
@@ -52,11 +53,6 @@ export function MyCampaignListItem({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const rewardText =
-    campaign.reward_type === "cps"
-      ? `판매당 ${formatWon(campaign.reward_amount)}`
-      : `클릭당 ${formatWon(campaign.reward_amount)}`;
-
   return (
     <div
       className={cn(
@@ -64,10 +60,10 @@ export function MyCampaignListItem({
         className
       )}
     >
-      <div className="p-5">
-        <div className="flex items-start gap-4">
+      <div className="p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
           {/* 이미지 */}
-          <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0">
+          <div className="w-full sm:w-24 h-48 sm:h-24 rounded-lg overflow-hidden shrink-0">
             <ImageWithFallback
               src={product.image_url}
               alt={product.name}
@@ -77,46 +73,51 @@ export function MyCampaignListItem({
           </div>
 
           {/* 메인 정보 */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-3">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-bold text-lg mb-1 truncate">{product.name}</h3>
-                <div className="flex items-center gap-3 text-sm text-neutral-600">
-                  <span>
-                    판매가: <span className="font-semibold text-neutral-900">{formatWon(product.price)}</span>
-                  </span>
-                  <span className="text-neutral-300">|</span>
-                  <span>
-                    보상: <span className="font-semibold text-neutral-900">{rewardText}</span>
-                  </span>
-                </div>
-              </div>
+          <div className="flex-1 min-w-0 w-full">
+            {/* 제목과 상태 배지 */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 mb-3">
+              <h3 className="font-bold text-lg mb-1 sm:mb-0 break-words">{product.name}</h3>
               <StatusBadge
                 tone="success"
                 size="sm"
-                className="flex items-center gap-1.5 shrink-0"
+                className="flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 승인됨
               </StatusBadge>
             </div>
 
+            {/* 판매가/보상 정보 */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+              <CampaignPriceInfo
+                productPrice={product.price}
+                isLoggedIn={true}
+                size="sm"
+              />
+              <CampaignRewardInfo
+                rewardType={campaign.reward_type}
+                rewardAmount={campaign.reward_amount}
+                size="sm"
+              />
+            </div>
+
             {/* 통계 및 액션 */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6 text-sm">
-                <div>
-                  <span className="text-neutral-600">클릭 수</span>
-                  <span className="ml-2 font-bold text-primary text-lg">{clicks.toLocaleString()}</span>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
+              {/* 클릭 수 통계 */}
+              <div className="text-sm">
+                <span className="text-neutral-600">클릭 수</span>
+                <span className="ml-2 font-bold text-primary text-lg">{clicks.toLocaleString()}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-neutral-50 rounded-lg px-3 py-1.5 border border-neutral-200">
+              {/* 액션 버튼들 */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                {/* 트래킹 링크 복사 */}
+                <div className="flex items-center gap-2 bg-neutral-50 rounded-lg px-3 py-1.5 border border-neutral-200 min-w-0">
                   <input
                     type="text"
                     value={trackingLink}
                     readOnly
-                    className="text-xs bg-transparent border-none outline-none text-neutral-700 min-w-0 max-w-[200px] truncate"
+                    className="text-xs bg-transparent border-none outline-none text-neutral-700 flex-1 min-w-0 max-w-none sm:max-w-[200px] truncate"
                   />
                   <Button
                     size="sm"
@@ -132,11 +133,12 @@ export function MyCampaignListItem({
                     )}
                   </Button>
                 </div>
-                <Link href={`/campaigns/${campaign.id}`}>
+                {/* 자세히 보기 버튼 */}
+                <Link href={`/campaigns/${campaign.id}`} className="w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="shrink-0"
+                    className="w-full sm:w-auto shrink-0"
                   >
                     자세히 보기
                   </Button>

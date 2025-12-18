@@ -3,10 +3,9 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
 import { CategoryText } from "@/components/primitives/CategoryText";
-import { LockedValue } from "@/components/patterns/LockedValue";
+import { CampaignMetaInfo } from "@/components/primitives/CampaignMetaInfo";
 import type { Campaign, Product } from "@/lib/types/campaign";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
@@ -99,29 +98,14 @@ export function CampaignDetailForCreator({ campaign }: { campaign: Campaign }) {
               <h1 className="text-2xl md:text-3xl font-bold mb-3">{product.name}</h1>
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
-                    {campaign.reward_type === "cps" ? "판매당" : "클릭당"}
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {campaign.reward_amount != null ? formatWon(campaign.reward_amount) : "-"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
-                    판매가
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    <LockedValue
-                      locked={product.price === null}
-                      value={product.price !== null ? formatWon(product.price) : ""}
-                      preview="????원"
-                      className="inline-flex"
-                    />
-                  </span>
-                </div>
-              </div>
+              <CampaignMetaInfo
+                rewardType={campaign.reward_type}
+                rewardAmount={campaign.reward_amount}
+                productPrice={product.price}
+                isLoggedIn={true}
+                size="sm"
+                className="mb-4"
+              />
 
               {/* Created At */}
               {campaign.created_at && (

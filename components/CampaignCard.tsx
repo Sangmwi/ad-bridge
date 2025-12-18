@@ -2,11 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { LockedValue } from "@/components/patterns/LockedValue";
-import { formatWon } from "@/lib/format";
 import { formatTimeAgo } from "@/lib/time";
 import { RewardTypeBadge } from "@/components/primitives/RewardTypeBadge";
 import { CategoryText } from "@/components/primitives/CategoryText";
+import { CampaignPriceInfo } from "@/components/primitives/CampaignPriceInfo";
 import type { Campaign, Product } from "@/lib/types/campaign";
 import Link from "next/link";
 
@@ -57,32 +56,30 @@ export function CampaignCard({ campaign, userRole, isLoggedIn }: CampaignCardPro
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-          <div className="text-sm">
-            <span className="text-neutral-600">가격:</span>
-            <span className="font-semibold ml-2 text-neutral-900">
-              <LockedValue
-                locked={!isLoggedIn}
-                value={product.price !== null ? formatWon(product.price) : "가격 정보 없음"}
-                preview="????원"
-                className="inline-flex"
-              />
-            </span>
-          </div>
+        <div className="mt-4 pt-4 border-t border-border space-y-3">
+          {/* 메타 정보 (판매가만 - 보상은 이미지 위 RewardTypeBadge에 표시됨) */}
+          <CampaignPriceInfo
+            productPrice={product.price}
+            isLoggedIn={isLoggedIn}
+            size="sm"
+          />
           
-          {!isLoggedIn && (
-            <Button onClick={() => window.location.href = "/auth/login"} size="sm">
-              시작하기
-            </Button>
-          )}
-          {isLoggedIn && userRole === "creator" && (
-            <Link href={`/campaigns/${campaign.id}`}>
-              <Button size="sm" variant="outline">
-                자세히 보기
+          {/* 액션 버튼 */}
+          <div className="flex justify-end">
+            {!isLoggedIn && (
+              <Button onClick={() => window.location.href = "/auth/login"} size="sm">
+                시작하기
               </Button>
-            </Link>
-          )}
-          {/* 광고주는 자신의 캠페인에 신청할 수 없으므로 버튼 표시하지 않음 */}
+            )}
+            {isLoggedIn && userRole === "creator" && (
+              <Link href={`/campaigns/${campaign.id}`}>
+                <Button size="sm" variant="outline">
+                  자세히 보기
+                </Button>
+              </Link>
+            )}
+            {/* 광고주는 자신의 캠페인에 신청할 수 없으므로 버튼 표시하지 않음 */}
+          </div>
         </div>
       </div>
     </div>

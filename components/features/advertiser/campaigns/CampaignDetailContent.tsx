@@ -6,8 +6,8 @@ import {
   ArrowLeft,
   MoreHorizontal,
 } from "lucide-react";
-import { formatWon } from "@/lib/format";
 import { StatusBadge } from "@/components/primitives/StatusBadge";
+import { CampaignMetaInfo } from "@/components/primitives/CampaignMetaInfo";
 import { formatTimeAgo } from "@/lib/time";
 import {
   DropdownMenu,
@@ -152,24 +152,14 @@ export function CampaignDetailContent({ campaignId }: CampaignDetailContentProps
               </div>
 
               {/* Row 3: meta */}
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
-                    {campaign.reward_type === "cps" ? "판매당" : "클릭당"}
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {campaign.reward_amount != null ? formatWon(campaign.reward_amount) : "-"}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600">
-                    판매가
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {product?.price != null ? formatWon(product.price) : "-"}
-                  </span>
-                </div>
+              <div className="mt-4">
+                <CampaignMetaInfo
+                  rewardType={campaign.reward_type}
+                  rewardAmount={campaign.reward_amount}
+                  productPrice={product?.price ?? null}
+                  isLoggedIn={true}
+                  size="sm"
+                />
               </div>
             </div>
           </div>
